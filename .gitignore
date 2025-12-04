@@ -1,0 +1,177 @@
+###############################
+# GLOBAL SECURITY
+###############################
+
+# Never commit secrets
+*.env
+*.env.*
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+*.pem
+*.key
+*.crt
+*.p12
+*.db
+secret.*
+secrets/*
+config/secrets/*
+**/credentials/*
+**/keys/*
+**/.secret
+
+# Token files
+.token
+*.token
+
+###############################
+# PYTHON (FastAPI, scripts ML)
+###############################
+
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv
+venv/
+ENV/
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints
+
+###############################
+# NODE.JS (React, NestJS)
+###############################
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+.next/
+out/
+dist/
+build/
+
+###############################
+# REACT / FRONTEND
+###############################
+
+*.log
+*.cache
+.cache/
+.parcel-cache/
+.eslintcache
+
+###############################
+# DOTNET / ASP.NET CORE
+###############################
+
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+Generated_Code/
+
+# Configuration sensitive
+appsettings.Development.json
+appsettings.*.json
+
+###############################
+# DATABASE / BACKUPS
+###############################
+
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+dump/
+backups/
+
+###############################
+# DOCKER
+###############################
+
+# Ignore bind mounts
+docker-data/
+docker/logs/
+docker/tmp/
+
+# Ignore compose override files
+docker-compose.override.yml
+docker-compose*.backup
+.dockerignore
+
+###############################
+# LOGS
+###############################
+
+*.log
+logs/
+log/
+*.trace
+*.pid
+
+###############################
+# TEMP FILES
+###############################
+
+*.tmp
+*.temp
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+.cache/
+
+###############################
+# IDEs
+###############################
+
+# VSCode
+.vscode/
+.history/
+
+# JetBrains (IntelliJ, PyCharm, WebStorm)
+.idea/
+*.iml
+
+# Visual Studio
+.vs/
+*.dbmdl
+*.jfm
+
+###############################
+# SYSTEM
+###############################
+
+# OS generated
+.DS_Store
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# Python virtual env system-wide
+venv*/
+ENV*/
