@@ -42,7 +42,8 @@ projet-soa-agri/
 ## 🧰 IDEs recommandés
 
 * **IntelliJ Ultimate** → Auth-Service + API Gateway (Spring Boot/Cloud)
-* **VS Code** → Farmer-Service (Node.js) & Prediction-Service (FastAPI)
+* **VS Code** → Farmer-Service (Node.js) 
+* **PyCharm Pro**-> Prediction-Service (FastAPI)
 * **IntelliJ Ultimate** → Crop-Service SOAP (JAX-WS)
 * **Visual Studio** → Billing-Service (.NET SOAP)
 
