@@ -156,8 +156,8 @@ Grâce à une répartition claire des responsabilités entre services indépenda
 
 ---
 
-**📅 Dernière mise à jour** : `date du jour`  
-**👤 Auteur** : `[À compléter]`  
-**🏷️ Version** : `1.0`
+**📅 Dernière mise à jour** : `05/12/2025`  
+**👤 Auteur** : `MAHAMADOU AMADOU HABOU`  
+**🏷️ Version** : `1.1`
 
 ---
