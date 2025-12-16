@@ -1,7 +1,7 @@
 #
 # Stage 1: Étape de construction (Utilise JDK 21)
 #
-FROM openjdk:21-jdk-slim AS builder # CHANGEMENT ICI : 25 -> 21
+FROM openjdk:21-jdk-slim AS builder
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ RUN ./mvnw clean package -DskipTests
 #
 # Stage 2: Étape d'exécution (Utilise JRE 21)
 #
-FROM openjdk:21-jre-slim # CHANGEMENT ICI : 25 -> 21
+FROM openjdk:21-jre-slim
 
 WORKDIR /app
 
