@@ -439,3 +439,10 @@ SOAP   markAsPaid         - Marquer comme payée
 
 **Document créé le:** 16 décembre 2025  
 **Pour questions:** Consulter README.md ou ouvrir une issue GitHub
+---
+
+**📅 Dernière mise à jour** : `05/16/2025`  
+**👤 Auteur** : `MAHAMADOU AMADOU HABOU`  
+**🏷️ Version** : `1.1`
+
+---
