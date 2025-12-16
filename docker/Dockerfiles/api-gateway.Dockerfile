@@ -1,24 +1,24 @@
 # Étape de construction
-FROM openjdk:25-jdk-slim AS builder
+FROM openjdk:21-jdk-slim AS builder
 
 WORKDIR /app
 
 # Copier les fichiers de configuration Maven
-COPY services/api-gateway/pom.xml .
-COPY services/api-gateway/mvnw .
-COPY services/api-gateway/.mvn .mvn
+COPY pom.xml .
+COPY mvnw .
+COPY .mvn .mvn
 
 # Télécharger les dépendances
 RUN ./mvnw dependency:go-offline -B
 
 # Copier le code source
-COPY services/api-gateway/src ./src
+COPY src ./src
 
 # Construire l'application
 RUN ./mvnw clean package -DskipTests
 
 # Étape d'exécution
-FROM openjdk:25-jre-slim
+FROM openjdk:21-jre-slim
 
 WORKDIR /app
 
