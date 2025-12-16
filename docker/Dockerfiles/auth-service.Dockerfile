@@ -1,5 +1,7 @@
-# Étape de construction
-FROM openjdk:25-jdk-slim AS builder
+#
+# Stage 1: Étape de construction (Utilise JDK 21)
+#
+FROM openjdk:21-jdk-slim AS builder # CHANGEMENT ICI : 25 -> 21
 
 WORKDIR /app
 
@@ -17,8 +19,10 @@ COPY services/auth-service/src ./src
 # Construire l'application
 RUN ./mvnw clean package -DskipTests
 
-# Étape d'exécution
-FROM openjdk:25-jre-slim
+#
+# Stage 2: Étape d'exécution (Utilise JRE 21)
+#
+FROM openjdk:21-jre-slim # CHANGEMENT ICI : 25 -> 21
 
 WORKDIR /app
 

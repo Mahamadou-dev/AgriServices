@@ -1,18 +1,18 @@
-version: '3.8'
-
 services:
-  # 1. AUTHENTIFICATION SERVICE (Spring Boot/Java, Port interne 8081)
+  # 1. AUTHENTIFICATION SERVICE
   auth-service:
     build:
       context: ../services/auth-service
       dockerfile: ../../docker/Dockerfiles/auth-service.Dockerfile
     environment:
-      # Utiliser le port interne défini
-      - SERVER_PORT=8081 
+      - SERVER_PORT=8081
+      - JWT_SECRET=dGhpcy1pcy1hLWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci10aGUtanctdC1hdXRoLXNlcnZpY2UtdG8tc2lnbi1hbmQtdmFsaWRhdGUtam9zLTM4
+    depends_on:
+      - postgres
     networks:
       - agri-network
 
-  # 2. FARMER SERVICE (Node.js/Express, Port interne 3001)
+  # 2. FARMER SERVICE
   farmer-service:
     build:
       context: ../services/farmer-service
@@ -22,7 +22,7 @@ services:
     networks:
       - agri-network
 
-  # 3. CROP SERVICE (JAX-WS Java, Port interne 8082)
+  # 3. CROP SERVICE
   crop-service:
     build:
       context: ../services/crop-service
@@ -31,8 +31,8 @@ services:
       - SERVICE_URL=http://0.0.0.0:8082/CropService
     networks:
       - agri-network
-      
-  # 4. PREDICTION SERVICE (FastAPI Python, Port interne 8000)
+
+  # 4. PREDICTION SERVICE
   prediction-service:
     build:
       context: ../services/prediction-service
@@ -42,7 +42,7 @@ services:
     networks:
       - agri-network
 
-  # 5. BILLING SERVICE (CoreWCF .NET, Port interne 8085)
+  # 5. BILLING SERVICE
   billing-service:
     build:
       context: ../services/billing-service
@@ -52,14 +52,13 @@ services:
     networks:
       - agri-network
 
-  # 6. API GATEWAY (Spring Cloud/Java, Port exposé 8080)
+  # 6. API GATEWAY
   api-gateway:
     build:
       context: ../services/api-gateway
       dockerfile: ../../docker/Dockerfiles/api-gateway.Dockerfile
     ports:
-      # Exposition du port public de la Gateway
-      - "8080:8080" 
+      - "8080:8080"
     depends_on:
       - auth-service
       - farmer-service
@@ -67,17 +66,30 @@ services:
       - prediction-service
       - billing-service
     environment:
-      # L'environnement Docker est clé : la Gateway utilise MAINTENANT les NOMS des services
-      # et non 'localhost'.
-      - SPRING_CLOUD_GATEWAY_ROUTES[0].uri=http://auth-service:8081
-      - SPRING_CLOUD_GATEWAY_ROUTES[1].uri=http://farmer-service:3001
-      - SPRING_CLOUD_GATEWAY_ROUTES[2].uri=http://crop-service:8082
-      - SPRING_CLOUD_GATEWAY_ROUTES[3].uri=http://prediction-service:8000
-      - SPRING_CLOUD_GATEWAY_ROUTES[4].uri=http://billing-service:8085
+      - SPRING_CLOUD_GATEWAY_ROUTES_0_URI=http://auth-service:8081
+      - SPRING_CLOUD_GATEWAY_ROUTES_1_URI=http://farmer-service:3001
+      - SPRING_CLOUD_GATEWAY_ROUTES_2_URI=http://crop-service:8082
+      - SPRING_CLOUD_GATEWAY_ROUTES_3_URI=http://prediction-service:8000
+      - SPRING_CLOUD_GATEWAY_ROUTES_4_URI=http://billing-service:8085
     networks:
       - agri-network
 
-# Définition du réseau Docker
+  # 7. BASE DE DONNÉES POSTGRES
+  postgres:
+    image: postgres:16-alpine
+    container_name: agri-postgres-auth
+    environment:
+      - POSTGRES_DB=auth_db
+      - POSTGRES_USER=authuser
+      - POSTGRES_PASSWORD=authpassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - agri-network
+
+volumes:
+  postgres_data:
+
 networks:
   agri-network:
     driver: bridge
