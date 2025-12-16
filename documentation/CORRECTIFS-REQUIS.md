@@ -160,19 +160,18 @@ Voici un script bash pour appliquer tous les correctifs automatiquement :
 
 echo "🔧 Application des correctifs..."
 
-# 1. Corriger auth-service.Dockerfile
+# 1. Corriger auth-service.Dockerfile (COPY paths seulement)
 sed -i 's|COPY services/auth-service/|COPY |g' docker/Dockerfiles/auth-service.Dockerfile
-sed -i 's|FROM openjdk:25|FROM openjdk:21|g' docker/Dockerfiles/auth-service.Dockerfile
 
-# 2. Corriger crop-service.Dockerfile
+# 2. Corriger crop-service.Dockerfile (COPY paths + version Java)
 sed -i 's|COPY services/crop-service/|COPY |g' docker/Dockerfiles/crop-service.Dockerfile
 sed -i 's|FROM openjdk:25|FROM openjdk:21|g' docker/Dockerfiles/crop-service.Dockerfile
 
-# 3. Corriger api-gateway.Dockerfile
+# 3. Corriger api-gateway.Dockerfile (COPY paths + version Java)
 sed -i 's|COPY services/api-gateway/|COPY |g' docker/Dockerfiles/api-gateway.Dockerfile
 sed -i 's|FROM openjdk:25|FROM openjdk:21|g' docker/Dockerfiles/api-gateway.Dockerfile
 
-# 4. Corriger billing-service.Dockerfile
+# 4. Corriger billing-service.Dockerfile (COPY paths seulement)
 sed -i 's|COPY services/billing-service/|COPY BillingService/|g' docker/Dockerfiles/billing-service.Dockerfile
 
 # 5. Ajouter Maven wrapper au crop-service

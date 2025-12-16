@@ -122,8 +122,9 @@ Incohérence entre les versions Java utilisées :
 **Détails:**
 - Le README.md annonce **Java 25** pour tous les services
 - Les pom.xml de auth-service et api-gateway utilisent **Java 21**
-- Les pom.xml de crop-service utilise **Java 21**
-- Les Dockerfiles de crop-service et api-gateway utilisent **openjdk:25**
+- Le pom.xml de crop-service utilise **Java 21**
+- Les Dockerfiles de crop-service et api-gateway utilisent **openjdk:25** (incohérent)
+- Le Dockerfile de auth-service utilise correctement **openjdk:21** ✅
 
 **Impact:** ⚠️ Risque de problèmes de compatibilité ou d'échecs de build
 
