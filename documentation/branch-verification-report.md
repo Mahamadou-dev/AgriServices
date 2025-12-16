@@ -133,6 +133,8 @@ Standardiser sur **Java 21** (version LTS stable) :
 1. Corriger les Dockerfiles api-gateway et crop-service pour utiliser `openjdk:21`
 2. Mettre à jour le README.md pour mentionner Java 21 au lieu de Java 25
 
+**Note:** Java 25 n'existe pas encore (la dernière version LTS est Java 21, sortie en septembre 2023). La prochaine version LTS sera Java 25 en septembre 2025, mais pour l'instant, Java 21 est la version recommandée pour la production.
+
 ---
 
 ### 4. ⚠️ MAJEUR: Structure incorrecte du billing-service

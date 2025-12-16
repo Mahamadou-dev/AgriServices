@@ -182,7 +182,11 @@ cd ../..
 # 6. Supprimer le fichier touch
 rm -f touch
 
+# 7. Mettre à jour README.md pour corriger la version Java
+sed -i 's|Java 25|Java 21|g' README.md
+
 echo "✅ Correctifs appliqués avec succès!"
+echo "⚠️  Note: Java 25 n'existe pas encore - Java 21 est la dernière version LTS"
 echo "🧪 Testez avec: cd docker && docker compose build"
 ```
 
