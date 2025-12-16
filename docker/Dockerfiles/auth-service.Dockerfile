@@ -1,20 +1,20 @@
 #
 # Stage 1: Étape de construction (Utilise JDK 21)
 #
-FROM openjdk:21-jdk-slim AS builder # CHANGEMENT ICI : 25 -> 21
+FROM openjdk:21-jdk-slim AS builder
 
 WORKDIR /app
 
 # Copier les fichiers de configuration Maven
-COPY services/auth-service/pom.xml .
-COPY services/auth-service/mvnw .
-COPY services/auth-service/.mvn .mvn
+COPY pom.xml .
+COPY mvnw .
+COPY .mvn .mvn
 
 # Télécharger les dépendances
 RUN ./mvnw dependency:go-offline -B
 
 # Copier le code source
-COPY services/auth-service/src ./src
+COPY src ./src
 
 # Construire l'application
 RUN ./mvnw clean package -DskipTests
@@ -22,7 +22,7 @@ RUN ./mvnw clean package -DskipTests
 #
 # Stage 2: Étape d'exécution (Utilise JRE 21)
 #
-FROM openjdk:21-jre-slim # CHANGEMENT ICI : 25 -> 21
+FROM openjdk:21-jre-slim
 
 WORKDIR /app
 

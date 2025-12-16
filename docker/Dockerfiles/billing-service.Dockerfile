@@ -3,11 +3,11 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copier les fichiers projet et restaurer les dépendances
-COPY services/billing-service/*.csproj ./
+COPY BillingService/*.csproj ./
 RUN dotnet restore
 
 # Copier le code source
-COPY services/billing-service/ ./
+COPY BillingService/ ./
 
 # Publier l'application
 RUN dotnet publish -c Release -o /app/publish
