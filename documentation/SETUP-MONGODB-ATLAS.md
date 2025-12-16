@@ -390,6 +390,12 @@ require('dotenv').config();
 
 ---
 
-**Configuration complétée le:** ___ / ___ / 2025  
-**Par:** ___________________  
+ 
 **Cluster Name:** AgriServicesCluster
+---
+
+**📅 Dernière mise à jour** : `05/12/2025`  
+**👤 Auteur** : `MAHAMADOU AMADOU HABOU`  
+**🏷️ Version** : `1.1`
+
+--- 
