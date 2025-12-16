@@ -1,24 +1,17 @@
-FROM node:22.11.1-alpine
+FROM node:22. 11.1-alpine
 
 WORKDIR /app
 
-# Créer un utilisateur non-root pour la sécurité
-RUN groupadd -r nodejs && \
-    useradd -r -g nodejs -d /home/nodejs -s /sbin/nologin nodejs && \
-    mkdir -p /home/nodejs && \
-    chown -R nodejs:nodejs /home/nodejs
+RUN addgroup -S nodejs && \
+    adduser -S -G nodejs -h /home/nodejs nodejs
 
-# Copier les fichiers de dépendances
-COPY services/farmer-service/package*.json ./
+COPY package*.json ./
 
-# Installer les dépendances de production
 RUN npm ci --only=production && \
     npm cache clean --force
 
-# Copier le code source
-COPY services/farmer-service/ ./
+COPY . .
 
-# Changer les permissions
 RUN chown -R nodejs:nodejs /app
 
 USER nodejs
