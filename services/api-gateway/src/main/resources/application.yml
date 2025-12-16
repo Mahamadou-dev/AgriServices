@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application: 
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: http://auth-service:8081
+          predicates:
+            - Path=/api/auth/**
+        
+        - id: farmer-service
+          uri: http://farmer-service:3001
+          predicates: 
+            - Path=/api/farmers/**
+        
+        - id:  prediction-service
+          uri: http://prediction-service:8000
+          predicates:
+            - Path=/api/predictions/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
