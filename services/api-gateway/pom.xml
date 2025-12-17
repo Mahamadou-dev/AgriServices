@@ -16,7 +16,7 @@
     <version>1.0.0</version>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
     </properties>
 
@@ -46,7 +46,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework. boot</groupId>
+                <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>

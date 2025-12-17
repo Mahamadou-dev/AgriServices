@@ -43,14 +43,14 @@ public class JwtService {
     }
     
     public void validateToken(String token) {
-        Jwts.parserBuilder()
+        Jwts.parser()
             .setSigningKey(getSignKey())
             .build()
             .parseClaimsJws(token);
     }
     
     public Claims extractClaims(String token) {
-        return Jwts.parserBuilder()
+        return Jwts.parser()
             .setSigningKey(getSignKey())
             .build()
             .parseClaimsJws(token)

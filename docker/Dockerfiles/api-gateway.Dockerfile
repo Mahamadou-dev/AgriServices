@@ -1,5 +1,5 @@
 # Étape de construction
-FROM openjdk:21-jdk-slim AS builder
+FROM openjdk:17-jdk-slim AS builder
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
 # Étape d'exécution
-FROM openjdk:21-jre-slim
+FROM openjdk:17-jre-slim
 
 WORKDIR /app
 
