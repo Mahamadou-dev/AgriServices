@@ -51,7 +51,7 @@ projet-soa-agri/
 
 ## 🧱 Technologies utilisées
 
-* Java 25 — Spring Boot / Spring Cloud
+* Java 17 — Spring Boot / Spring Cloud
 * Node.js 22 — Express
 * Python 3.12 — FastAPI
 * .NET 9 — SOAP Services
