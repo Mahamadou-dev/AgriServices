@@ -1,19 +1,22 @@
 {
   "name": "farmer-service",
   "version": "1.0.0",
-  "description": "",
+  "description": "Farmer Management Service - Node.js/Express REST API",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["farmer", "agriculture", "rest-api", "express"],
+  "author": "MAHAMADOU AMADOU HABOU",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-rate-limit": "^7.1.5",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.0.0"
   }
