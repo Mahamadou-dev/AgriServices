@@ -1,5 +1,5 @@
 # Étape de construction
-FROM openjdk:21-jdk-slim AS builder
+FROM eclipse-temurin:17-jdk-alpine AS builder
 
 WORKDIR /app
 
@@ -18,13 +18,13 @@ COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
 # Étape d'exécution
-FROM openjdk:21-jre-slim
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
 # Créer un utilisateur non-root
-RUN addgroup --system --gid 1001 appuser && \
-    adduser --system --uid 1001 --gid 1001 appuser
+RUN addgroup -g 1001 -S appuser && \
+    adduser -u 1001 -S -G appuser appuser
 
 # Copier le JAR depuis l'étape de construction
 COPY --from=builder /app/target/*.jar app.jar

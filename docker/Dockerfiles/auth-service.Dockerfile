@@ -1,7 +1,7 @@
 #
 # Stage 1: Étape de construction (Utilise JDK 17)
 #
-FROM openjdk:17-jdk-slim AS builder
+FROM eclipse-temurin:17-jdk-alpine AS builder
 
 WORKDIR /app
 
@@ -22,13 +22,13 @@ RUN ./mvnw clean package -DskipTests
 #
 # Stage 2: Étape d'exécution (Utilise JRE 17)
 #
-FROM openjdk:17-jre-slim
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
 # Créer un utilisateur non-root
-RUN addgroup --system --gid 1001 spring && \
-    adduser --system --uid 1001 --gid 1001 spring
+RUN addgroup -g 1001 -S spring && \
+    adduser -u 1001 -S -G spring spring
 
 # Copier le JAR depuis l'étape de construction
 COPY --from=builder /app/target/*.jar app.jar
