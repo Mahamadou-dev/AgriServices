@@ -1,99 +1,146 @@
-# 🌾 Projet SOA Agricole — README d'Initialisation
+# 🌾 AgriServices - Plateforme SOA de Gestion Agricole
 
-Ce document présente l'initialisation du projet SOA Agricole. Il sert de première base pour la mise en place du dépôt Git, de la structure globale, des services et des outils.
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
+[![License](https://img.shields.io/badge/license-Academic-blue)]()
+[![Java](https://img.shields.io/badge/Java-17-orange)]()
+[![Node.js](https://img.shields.io/badge/Node.js-20-green)]()
+[![Python](https://img.shields.io/badge/Python-3.12-blue)]()
+[![.NET](https://img.shields.io/badge/.NET-9-purple)]()
 
----
+Une plateforme SOA (Service-Oriented Architecture) distribuée et moderne pour la gestion complète des exploitations agricoles, intégrant services REST et SOAP.
 
-## 🚀 Objectif
+## 📋 Table des Matières
 
-Mettre en place la structure complète du projet SOA multi-technologies, avec tous les services, prêts à être développés, testés et conteneurisés.
-
----
-
-## 📁 Structure initiale du projet
-
-```
-projet-soa-agri/
-│
-├── documentation/
-│   ├── cahier-des-charges.md
-│   ├── specs-techniques.md
-│   └── manuel-utilisation.md
-│
-├── services/
-│   ├── auth-service/           (Spring Boot - REST)
-│   ├── farmer-service/         (Node/Express - REST)
-│   ├── crop-service/           (Java SOAP - JAX-WS)
-│   ├── prediction-service/     (FastAPI - REST)
-│   ├── billing-service/        (.NET Core SOAP)
-│   └── api-gateway/            (Spring Cloud)
-│
-├── docker/
-│   ├── docker-compose.yml
-│   └── Dockerfiles/
-│
-└── presentations/
-    ├── soutenance-finale.pptx
-    └── demo-video.mp4
-```
+- [Vue d'ensemble](#vue-densemble)
+- [Architecture](#architecture)
+- [Fonctionnalités](#fonctionnalités)
+- [Technologies](#technologies)
+- [Installation Rapide](#installation-rapide)
+- [Utilisation](#utilisation)
+- [Documentation](#documentation)
+- [État du Projet](#état-du-projet)
 
 ---
 
-## 🧰 IDEs recommandés
+## 🎯 Vue d'Ensemble
 
-* **IntelliJ Ultimate** → Auth-Service + API Gateway (Spring Boot/Cloud)
-* **VS Code** → Farmer-Service (Node.js) 
-* **PyCharm Pro**-> Prediction-Service (FastAPI)
-* **IntelliJ Ultimate** → Crop-Service SOAP (JAX-WS)
-* **Visual Studio** → Billing-Service (.NET SOAP)
+AgriServices est une solution complète de gestion agricole moderne basée sur une architecture orientée services (SOA). Elle permet aux agriculteurs, coopératives et experts agricoles de :
 
----
-
-## 🧱 Technologies utilisées
-
-* Java 25 — Spring Boot / Spring Cloud
-* Node.js 22 — Express
-* Python 3.12 — FastAPI
-* .NET 9 — SOAP Services
-* JAX-WS (SOAP XML, WSDL)
-* Docker / Docker Compose
-* JWT (HS256)
+- 🔐 Gérer l'authentification sécurisée avec JWT
+- 👨‍🌾 Administrer les profils d'agriculteurs et leurs exploitations
+- �� Suivre les cultures et les parcelles (SOAP)
+- 🔮 Obtenir des prédictions de rendement basées sur l'IA
+- 💰 Gérer la facturation des intrants agricoles (SOAP)
+- 🌐 Accéder à tous les services via une API Gateway unifiée
 
 ---
 
-## 🗃️ Initialisation Git
+## 🏗️ Architecture
+
+### Services
+
+| Service | Technologie | Port | Type | Statut |
+|---------|-------------|------|------|--------|
+| **API Gateway** | Spring Cloud | 8080 | REST | ✅ Implémenté |
+| **Auth Service** | Spring Boot | 8081 | REST | ✅ Implémenté |
+| **Farmer Service** | Node.js/Express | 3001 | REST | ✅ Implémenté |
+| **Crop Service** | JAX-WS | 8082 | SOAP | ⚠️ À compléter |
+| **Prediction Service** | FastAPI | 8000 | REST | ✅ Implémenté |
+| **Billing Service** | .NET CoreWCF | 8085 | SOAP | ⚠️ À compléter |
+
+### Bases de Données
+
+- **PostgreSQL** : Auth Service, Billing Service
+- **MongoDB** : Farmer Service
+
+---
+
+## ✨ Fonctionnalités
+
+### 🔐 Auth Service (Authentification)
+- Inscription et connexion sécurisées
+- Génération et validation de tokens JWT
+- Gestion des rôles (FARMER, ADMIN, EXPERT)
+
+### 👨‍🌾 Farmer Service (Gestion Agriculteurs)
+- CRUD complet des profils d'agriculteurs
+- Recherche et filtrage avancés
+- Gestion des exploitations
+
+### 🔮 Prediction Service (Prédictions IA)
+- Prédiction de rendement agricole
+- Évaluation des risques
+- Recommandations personnalisées
+
+---
+
+## 🛠️ Technologies
+
+- **Java 17** - Spring Boot 3.2, Spring Cloud Gateway
+- **Node.js 20** - Express 5, Mongoose
+- **Python 3.12** - FastAPI, Pydantic
+- **.NET 9** - CoreWCF
+- **PostgreSQL 16** & **MongoDB 7**
+- **Docker** & **Docker Compose**
+
+---
+
+## 🚀 Installation Rapide
 
 ```bash
-git init
-git branch -M main
-git add .
-git commit -m "Initialisation du projet SOA Agricole"
+# 1. Cloner le dépôt
+git clone https://github.com/Mahamadou-dev/AgriServices.git
+cd AgriServices
+
+# 2. Démarrer avec Docker Compose
+cd docker
+docker-compose up -d
+
+# 3. Vérifier l'état
+curl http://localhost:8080/health
 ```
 
 ---
 
-## 🛠️ Étapes d'initialisation
+## 📚 Documentation
 
-1. Création des dossiers principaux
-2. Ajout des fichiers de documentation vides
-3. Mise en place des squelettes des services
-4. Préparation du docker-compose
-5. Ajout du .gitignore global
-6. Commit initial
-
----
-
-## 📦 Services prévus
-
-* **Auth-Service** : Authentification agriculteurs/experts + JWT
-* **Farmer-Service** : Gestion des agriculteurs (CRUD)
-* **Crop-Service** : Gestion cultures & parcelles en SOAP
-* **Prediction-Service** : Prédictions agricoles simples
-* **Billing-Service** : Facturation intrants agricoles en SOAP
-* **API Gateway** : Routage, sécurité, agrégation
+| Document | Description |
+|----------|-------------|
+| [Architecture](documentation/architecture.md) | Diagrammes et architecture SOA |
+| [Guide de Déploiement](documentation/guide-deploiement.md) | Installation production |
+| [Production Readiness](documentation/production-readiness.md) | Checklist pré-production |
+| [Farmer Service](services/farmer-service/README.md) | Documentation Farmer Service |
+| [Prediction Service](services/prediction-service/README.md) | Documentation Prediction Service |
 
 ---
 
-## 📜 Licence
+## 📊 État du Projet
 
-Projet académique — Usage pédagogique uniquement.
+### ✅ Complété (80%)
+
+- ✅ Auth Service, Farmer Service, Prediction Service fonctionnels
+- ✅ API Gateway configuré
+- ✅ Docker Compose avec bases de données
+- ✅ Documentation technique complète
+
+### ⚠️ À Compléter (20%)
+
+- ⚠️ Crop Service (SOAP/JAX-WS) à implémenter
+- ⚠️ Billing Service (.NET SOAP) à compléter
+- ⚠️ Tests automatisés
+- ⚠️ CI/CD Pipeline
+
+**Voir** : [Production Readiness Checklist](documentation/production-readiness.md)
+
+---
+
+## 📄 Licence
+
+Projet académique - Usage pédagogique uniquement.
+
+## 👤 Auteur
+
+**MAHAMADOU AMADOU HABOU**
+
+**Dernière mise à jour** : 17 Décembre 2025  
+**Version** : 1.0.0
