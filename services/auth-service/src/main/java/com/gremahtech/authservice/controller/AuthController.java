@@ -1,40 +1,76 @@
-// File: src/main/java/com/gremahtech/authservice/controller/AuthController.java
-
 package com.gremahtech.authservice.controller;
 
-import com.gremahtech.authservice.service.JwtService;
+import com.gremahtech.authservice.dto.AuthResponse;
+import com.gremahtech.authservice.dto.LoginRequest;
+import com.gremahtech.authservice.dto.RegisterRequest;
+import com.gremahtech.authservice.model.User;
+import com.gremahtech.authservice.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     @Autowired
-    private JwtService jwtService;
+    private AuthService authService;
 
-    // Route simple pour générer un jeton (simule la connexion réussie)
-    @GetMapping("/token")
-    public ResponseEntity<String> getToken(@RequestParam String username, @RequestParam String role) {
-        // En réalité, ici il y aurait la vérification du mot de passe en base de données.
-
-        if (username.isEmpty() || role.isEmpty()) {
-            return ResponseEntity.badRequest().body("Username and role are required.");
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        try {
+            User user = authService.register(request);
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", user.getId());
+            response.put("username", user.getUsername());
+            response.put("email", user.getEmail());
+            response.put("role", user.getRole());
+            response.put("createdAt", user.getCreatedAt());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
-
-        String token = jwtService.generateToken(username, role);
-
-        // Retourne le jeton encodé
-        return ResponseEntity.ok(token);
     }
 
-    // Endpoint pour tester le service (Health check)
-    @GetMapping("/hello")
-    public String hello() {
-        return "Auth-Service is running and ready on port 8081!";
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            AuthResponse response = authService.login(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            boolean isValid = authService.validateToken(token);
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("valid", isValid);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Invalid token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+    }
+
+    @GetMapping("/health")
+    public ResponseEntity<?> health() {
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "ok");
+        response.put("service", "auth-service");
+        return ResponseEntity.ok(response);
     }
 }
