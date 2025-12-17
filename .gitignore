@@ -9,6 +9,10 @@
 .env.development.local
 .env.production.local
 .env.test.local
+
+# EXCEPT .env.example (safe to commit)
+!.env.example
+!**/.env.example
 *.pem
 *.key
 *.crt
