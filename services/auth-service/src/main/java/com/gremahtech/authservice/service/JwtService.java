@@ -1,7 +1,6 @@
-// File: src/main/java/com/gremahtech/authservice/service/JwtService.java
-
 package com.gremahtech.authservice.service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -18,10 +17,9 @@ import java.util.Map;
 public class JwtService {
 
     @Value("${jwt.secret}")
-    private String SECRET; // Récupère la clé secrète du application.properties
+    private String SECRET;
 
-    // Durée de validité du jeton : 1 heure
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60;
+    private static final long EXPIRATION_TIME = 3600000L; // 1 hour
 
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
@@ -42,5 +40,28 @@ public class JwtService {
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+    
+    public void validateToken(String token) {
+        Jwts.parser()
+            .setSigningKey(getSignKey())
+            .build()
+            .parseClaimsJws(token);
+    }
+    
+    public Claims extractClaims(String token) {
+        return Jwts.parser()
+            .setSigningKey(getSignKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+    }
+    
+    public String extractUsername(String token) {
+        return extractClaims(token).getSubject();
+    }
+    
+    public String extractRole(String token) {
+        return extractClaims(token).get("role", String.class);
     }
 }

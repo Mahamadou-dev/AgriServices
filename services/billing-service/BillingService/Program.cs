@@ -1,31 +1,41 @@
-// File: services/billing-service/Program.cs
-
-using Contracts;
-using Services;
+using CoreWCF;
 using CoreWCF.Configuration;
+using CoreWCF. Description;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuration du port 8085
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(8085);
-});
-
-// Ajouter les services CoreWCF
 builder.Services.AddServiceModelServices();
-builder.Services.AddSingleton<IBillingService, BillingService>();
+builder.Services.AddServiceModelMetadata();
+builder.Services.AddSingleton<IServiceBehavior, ServiceMetadataBehavior>();
 
 var app = builder.Build();
 
-// Ajouter l'endpoint SOAP à l'URL de base
-// Remplacez l'utilisation de CoreWCF.Channels.BasicHttpBinding par CoreWCF.BasicHttpBinding
 app.UseServiceModel(serviceBuilder =>
 {
-    serviceBuilder.AddService<BillingService>()
-        .AddServiceEndpoint<BillingService, IBillingService>(
-            new CoreWCF.BasicHttpBinding(), "/BillingService.svc");
+    serviceBuilder. AddService<BillingService>();
+    serviceBuilder.AddServiceEndpoint<BillingService, IBillingService>(
+        new BasicHttpBinding(), "/billing");
+    
+    var serviceMetadataBehavior = app.Services.GetRequiredService<ServiceMetadataBehavior>();
+    serviceMetadataBehavior.HttpGetEnabled = true;
 });
 
+Console.WriteLine("Billing Service (SOAP) running on http://0.0.0.0:8085");
+Console.WriteLine("WSDL: http://0.0.0.0:8085/billing?wsdl");
 
-app.Run();
+app.Run("http://0.0.0.0:8085");
+
+[ServiceContract]
+public interface IBillingService
+{
+    [OperationContract]
+    string Hello();
+}
+
+public class BillingService : IBillingService
+{
+    public string Hello()
+    {
+        return "Hello World from Billing Service (SOAP)!";
+    }
+}

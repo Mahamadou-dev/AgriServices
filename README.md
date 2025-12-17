@@ -1,146 +1,237 @@
 # 🌾 AgriServices - Plateforme SOA de Gestion Agricole
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![License](https://img.shields.io/badge/license-Academic-blue)]()
-[![Java](https://img.shields.io/badge/Java-17-orange)]()
-[![Node.js](https://img.shields.io/badge/Node.js-20-green)]()
-[![Python](https://img.shields.io/badge/Python-3.12-blue)]()
-[![.NET](https://img.shields.io/badge/.NET-9-purple)]()
+Système de gestion agricole distribué basé sur une architecture orientée services (SOA) avec microservices REST et SOAP.
 
-Une plateforme SOA (Service-Oriented Architecture) distribuée et moderne pour la gestion complète des exploitations agricoles, intégrant services REST et SOAP.
-
-## 📋 Table des Matières
-
-- [Vue d'ensemble](#vue-densemble)
-- [Architecture](#architecture)
-- [Fonctionnalités](#fonctionnalités)
-- [Technologies](#technologies)
-- [Installation Rapide](#installation-rapide)
-- [Utilisation](#utilisation)
-- [Documentation](#documentation)
-- [État du Projet](#état-du-projet)
+[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.java.net/)
+[![Node.js](https://img.shields.io/badge/Node.js-22-green.svg)](https://nodejs.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)](https://www.mongodb.com/cloud/atlas)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 
 ---
 
-## 🎯 Vue d'Ensemble
+## 🎯 Description
 
-AgriServices est une solution complète de gestion agricole moderne basée sur une architecture orientée services (SOA). Elle permet aux agriculteurs, coopératives et experts agricoles de :
+AgriServices est une plateforme complète de gestion agricole permettant aux agriculteurs, coopératives et experts de gérer leurs exploitations, cultures, prédictions et factures de manière centralisée et sécurisée.
 
-- 🔐 Gérer l'authentification sécurisée avec JWT
-- 👨‍🌾 Administrer les profils d'agriculteurs et leurs exploitations
-- �� Suivre les cultures et les parcelles (SOAP)
-- 🔮 Obtenir des prédictions de rendement basées sur l'IA
-- 💰 Gérer la facturation des intrants agricoles (SOAP)
-- 🌐 Accéder à tous les services via une API Gateway unifiée
+### Fonctionnalités principales
+
+- 🔐 **Authentification JWT** : Sécurisation des accès avec tokens JWT
+- 👨‍🌾 **Gestion des agriculteurs** : CRUD complet avec MongoDB
+- 🌱 **Gestion des cultures** : Service SOAP pour les cultures et parcelles
+- 📊 **Prédictions agricoles** : Estimations de rendement et risques
+- 💰 **Facturation** : Service SOAP pour la gestion des factures
+- 🔗 **API Gateway** : Point d'entrée unique avec routage intelligent
 
 ---
 
 ## 🏗️ Architecture
 
-### Services
+Le système est composé de 6 microservices indépendants :
 
-| Service | Technologie | Port | Type | Statut |
-|---------|-------------|------|------|--------|
-| **API Gateway** | Spring Cloud | 8080 | REST | ✅ Implémenté |
-| **Auth Service** | Spring Boot | 8081 | REST | ✅ Implémenté |
-| **Farmer Service** | Node.js/Express | 3001 | REST | ✅ Implémenté |
-| **Crop Service** | JAX-WS | 8082 | SOAP | ⚠️ À compléter |
-| **Prediction Service** | FastAPI | 8000 | REST | ✅ Implémenté |
-| **Billing Service** | .NET CoreWCF | 8085 | SOAP | ⚠️ À compléter |
+```
+                          ┌─────────────────┐
+                          │   API Gateway   │
+                          │   (Port 8080)   │
+                          └────────┬────────┘
+                                   │
+        ┌──────────────────────────┼──────────────────────────┐
+        │              │           │           │              │
+        ▼              ▼           ▼           ▼              ▼
+  ┌──────────┐  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+  │   Auth   │  │  Farmer  │ │   Crop   │ │Prediction│ │ Billing  │
+  │ Service  │  │ Service  │ │ Service  │ │ Service  │ │ Service  │
+  │  :8081   │  │  :3001   │ │  :8082   │ │  :8000   │ │  :8085   │
+  └────┬─────┘  └────┬─────┘ └──────────┘ └──────────┘ └────┬─────┘
+       │             │                                        │
+       ▼             ▼                                        ▼
+  ┌──────────┐ ┌────────────┐                         ┌────────────┐
+  │PostgreSQL│ │MongoDB     │                         │MongoDB     │
+  │ Auth DB  │ │ Farmer DB  │                         │ Billing DB │
+  └──────────┘ └────────────┘                         └────────────┘
+```
 
-### Bases de Données
+### Technologies par service
 
-- **PostgreSQL** : Auth Service, Billing Service
-- **MongoDB** : Farmer Service
-
----
-
-## ✨ Fonctionnalités
-
-### 🔐 Auth Service (Authentification)
-- Inscription et connexion sécurisées
-- Génération et validation de tokens JWT
-- Gestion des rôles (FARMER, ADMIN, EXPERT)
-
-### 👨‍🌾 Farmer Service (Gestion Agriculteurs)
-- CRUD complet des profils d'agriculteurs
-- Recherche et filtrage avancés
-- Gestion des exploitations
-
-### 🔮 Prediction Service (Prédictions IA)
-- Prédiction de rendement agricole
-- Évaluation des risques
-- Recommandations personnalisées
-
----
-
-## 🛠️ Technologies
-
-- **Java 17** - Spring Boot 3.2, Spring Cloud Gateway
-- **Node.js 20** - Express 5, Mongoose
-- **Python 3.12** - FastAPI, Pydantic
-- **.NET 9** - CoreWCF
-- **PostgreSQL 16** & **MongoDB 7**
-- **Docker** & **Docker Compose**
+| Service | Technologie | Port | Base de données |
+|---------|-------------|------|-----------------|
+| **API Gateway** | Spring Cloud Gateway | 8080 | - |
+| **Auth Service** | Spring Boot 3.4 | 8081 | PostgreSQL 16 |
+| **Farmer Service** | Node.js 22 + Express | 3001 | MongoDB Atlas |
+| **Crop Service** | Java JAX-WS (SOAP) | 8082 | - |
+| **Prediction Service** | Python FastAPI | 8000 | - |
+| **Billing Service** | .NET 9 (SOAP) | 8085 | MongoDB Atlas |
 
 ---
 
-## 🚀 Installation Rapide
+## 🚀 Démarrage Rapide
 
+### Prérequis
+
+- Docker Desktop (v20.10+)
+- Docker Compose (v2.0+)
+- Compte MongoDB Atlas (gratuit) - [Voir SETUP-MONGODB-ATLAS.md](documentation/SETUP-MONGODB-ATLAS.md)
+- 4 GB RAM minimum
+
+### Installation
+
+1. **Cloner le repository**
 ```bash
-# 1. Cloner le dépôt
 git clone https://github.com/Mahamadou-dev/AgriServices.git
 cd AgriServices
+```
 
-# 2. Démarrer avec Docker Compose
+2. **Configurer les variables d'environnement**
+```bash
 cd docker
-docker-compose up -d
+cp .env.example .env
+# Éditer .env avec vos configurations MongoDB Atlas
+```
 
-# 3. Vérifier l'état
+3. **Démarrer tous les services**
+```bash
+docker compose up -d
+```
+
+4. **Vérifier le démarrage**
+```bash
+# Vérifier les services
+docker compose ps
+
+# Vérifier les logs
+docker compose logs -f
+
+# Tester l'API Gateway
 curl http://localhost:8080/health
 ```
 
 ---
 
-## 📚 Documentation
+## 📖 Documentation
 
-| Document | Description |
-|----------|-------------|
-| [Architecture](documentation/architecture.md) | Diagrammes et architecture SOA |
-| [Guide de Déploiement](documentation/guide-deploiement.md) | Installation production |
-| [Production Readiness](documentation/production-readiness.md) | Checklist pré-production |
-| [Farmer Service](services/farmer-service/README.md) | Documentation Farmer Service |
-| [Prediction Service](services/prediction-service/README.md) | Documentation Prediction Service |
+Documentation complète disponible dans le dossier `/documentation` :
+
+- **[Cahier des charges](documentation/cahier-des-charges.md)** - Spécifications du projet
+- **[Spécifications techniques](documentation/specs-techniques.md)** - Détails techniques
+- **[Manuel d'utilisation](documentation/manuel-utilisation.md)** - Guide utilisateur complet
+- **[Conception système](documentation/CONCEPTION-SYSTEME.md)** - Architecture et design
+- **[Setup MongoDB Atlas](documentation/SETUP-MONGODB-ATLAS.md)** - Configuration MongoDB
+- **[Guide équipe développement](documentation/GUIDE-EQUIPE-DEVELOPPEMENT.md)** - Guide pour les développeurs
 
 ---
 
-## 📊 État du Projet
+## 🔧 Développement
 
-### ✅ Complété (80%)
+### Structure du projet
 
-- ✅ Auth Service, Farmer Service, Prediction Service fonctionnels
-- ✅ API Gateway configuré
-- ✅ Docker Compose avec bases de données
-- ✅ Documentation technique complète
+```
+AgriServices/
+├── documentation/          # Documentation complète
+├── docker/                # Docker Compose et Dockerfiles
+│   ├── Dockerfiles/
+│   ├── docker-compose.yml
+│   └── .env.example
+├── services/
+│   ├── auth-service/      # Service d'authentification (Spring Boot)
+│   ├── farmer-service/    # Service agriculteurs (Node.js)
+│   ├── crop-service/      # Service cultures (JAX-WS SOAP)
+│   ├── prediction-service/# Service prédictions (FastAPI)
+│   ├── billing-service/   # Service facturation (.NET SOAP)
+│   └── api-gateway/       # Passerelle API (Spring Cloud)
+└── README.md
+```
 
-### ⚠️ À Compléter (20%)
+### Compilation locale
 
-- ⚠️ Crop Service (SOAP/JAX-WS) à implémenter
-- ⚠️ Billing Service (.NET SOAP) à compléter
-- ⚠️ Tests automatisés
-- ⚠️ CI/CD Pipeline
+**Auth Service & API Gateway (Java)**
+```bash
+cd services/auth-service
+./mvnw clean compile
+```
 
-**Voir** : [Production Readiness Checklist](documentation/production-readiness.md)
+**Farmer Service (Node.js)**
+```bash
+cd services/farmer-service
+npm install
+npm start
+```
+
+---
+
+## 📡 API Endpoints
+
+### Via API Gateway (http://localhost:8080)
+
+**Authentification**
+- `POST /auth/register` - Créer un compte
+- `POST /auth/login` - Se connecter
+- `GET /auth/validate` - Valider un token
+
+**Farmers**
+- `POST /api/farmers` - Créer un agriculteur
+- `GET /api/farmers` - Lister les agriculteurs
+- `GET /api/farmers/:id` - Obtenir un agriculteur
+- `PUT /api/farmers/:id` - Modifier un agriculteur
+- `DELETE /api/farmers/:id` - Supprimer un agriculteur
+
+**Prédictions**
+- `POST /api/predict/yield` - Prédire le rendement
+- `POST /api/predict/risk` - Évaluer les risques
+
+**Services SOAP**
+- `/crop/**` - Service cultures (WSDL disponible)
+- `/billing/**` - Service facturation (WSDL disponible)
+
+Voir le [Manuel d'utilisation](documentation/manuel-utilisation.md) pour des exemples détaillés.
+
+---
+
+## 🧪 Tests
+
+```bash
+# Tester le workflow complet
+cd docker
+./test-workflow.sh
+
+# Tester un service individuel
+curl http://localhost:8081/health  # Auth
+curl http://localhost:3001/health  # Farmer
+curl http://localhost:8080/health  # Gateway
+```
+
+---
+
+## 🛠️ Technologies
+
+- **Backend**: Spring Boot, Node.js, FastAPI, .NET Core
+- **Base de données**: PostgreSQL, MongoDB Atlas
+- **Sécurité**: JWT (HS256), Spring Security, BCrypt
+- **Communication**: REST, SOAP (JAX-WS, CoreWCF)
+- **Conteneurisation**: Docker, Docker Compose
+- **Gateway**: Spring Cloud Gateway
+
+---
+
+## 👥 Contributeurs
+
+- **MAHAMADOU AMADOU HABOU** - Développeur principal
 
 ---
 
 ## 📄 Licence
 
-Projet académique - Usage pédagogique uniquement.
+Projet académique — Usage pédagogique uniquement.
 
-## 👤 Auteur
+---
 
-**MAHAMADOU AMADOU HABOU**
+## 🆘 Support
 
-**Dernière mise à jour** : 17 Décembre 2025  
-**Version** : 1.0.0
+Pour toute question ou problème :
+1. Consulter la [documentation](documentation/)
+2. Ouvrir une [issue GitHub](https://github.com/Mahamadou-dev/AgriServices/issues)
+3. Consulter le [guide de dépannage](documentation/manuel-utilisation.md#️-dépannage)
+
+---
+
+**Version**: 1.0  
+**Dernière mise à jour**: 17 décembre 2025

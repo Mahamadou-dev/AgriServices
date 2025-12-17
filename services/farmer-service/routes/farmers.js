@@ -1,106 +1,67 @@
 const express = require('express');
 const router = express.Router();
 const Farmer = require('../models/Farmer');
-const { verifyToken } = require('../middleware/auth');
+const authMiddleware = require('../middleware/auth');
 
-// GET all farmers
-router.get('/', async (req, res) => {
+// Create a farmer
+router.post('/', authMiddleware, async (req, res) => {
     try {
-        const { status, location, page = 1, limit = 10 } = req.query;
-        
-        const query = {};
-        if (status) query.status = status;
-        if (location) query.location = new RegExp(location, 'i');
+        const farmer = new Farmer(req.body);
+        await farmer.save();
+        res.status(201).json(farmer);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
-        const farmers = await Farmer.find(query)
-            .limit(parseInt(limit))
-            .skip((parseInt(page) - 1) * parseInt(limit))
-            .sort({ createdAt: -1 });
-
-        const total = await Farmer.countDocuments(query);
-
-        res.json({
-            data: farmers,
-            pagination: {
-                page: parseInt(page),
-                limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / parseInt(limit))
-            }
-        });
+// Get all farmers
+router.get('/', authMiddleware, async (req, res) => {
+    try {
+        const farmers = await Farmer.find();
+        res.json(farmers);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// GET farmer by ID
-router.get('/:id', async (req, res) => {
+// Get a farmer by ID
+router.get('/:id', authMiddleware, async (req, res) => {
     try {
         const farmer = await Farmer.findById(req.params.id);
-        
         if (!farmer) {
             return res.status(404).json({ error: 'Farmer not found' });
         }
-
         res.json(farmer);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// POST create new farmer (protected)
-router.post('/', verifyToken, async (req, res) => {
-    try {
-        const farmer = new Farmer(req.body);
-        await farmer.save();
-        
-        res.status(201).json({
-            message: 'Farmer created successfully',
-            data: farmer
-        });
-    } catch (error) {
-        if (error.code === 11000) {
-            return res.status(400).json({ error: 'Email already exists' });
-        }
-        res.status(400).json({ error: error.message });
-    }
-});
-
-// PUT update farmer (protected)
-router.put('/:id', verifyToken, async (req, res) => {
+// Update a farmer
+router.put('/:id', authMiddleware, async (req, res) => {
     try {
         const farmer = await Farmer.findByIdAndUpdate(
             req.params.id,
             req.body,
             { new: true, runValidators: true }
         );
-
         if (!farmer) {
             return res.status(404).json({ error: 'Farmer not found' });
         }
-
-        res.json({
-            message: 'Farmer updated successfully',
-            data: farmer
-        });
+        res.json(farmer);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-// DELETE farmer (protected)
-router.delete('/:id', verifyToken, async (req, res) => {
+// Delete a farmer
+router.delete('/:id', authMiddleware, async (req, res) => {
     try {
         const farmer = await Farmer.findByIdAndDelete(req.params.id);
-
         if (!farmer) {
             return res.status(404).json({ error: 'Farmer not found' });
         }
-
-        res.json({
-            message: 'Farmer deleted successfully',
-            data: farmer
-        });
+        res.json({ message: 'Farmer deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

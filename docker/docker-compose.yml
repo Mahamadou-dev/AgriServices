@@ -4,9 +4,11 @@ services:
     build:
       context: ../services/auth-service
       dockerfile: ../../docker/Dockerfiles/auth-service.Dockerfile
+    ports:
+      - "8081:8081"
     environment:
       - SERVER_PORT=8081
-      - JWT_SECRET=dGhpcy1pcy1hLWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci10aGUtanctdC1hdXRoLXNlcnZpY2UtdG8tc2lnbi1hbmQtdmFsaWRhdGUtam9zLTM4
+      - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci10aGUtanctdC1hdXRoLXNlcnZpY2UtdG8tc2lnbi1hbmQtdmFsaWRhdGUtam9zLTM4}
     depends_on:
       - postgres
     networks:
@@ -17,12 +19,12 @@ services:
     build:
       context: ../services/farmer-service
       dockerfile: ../../docker/Dockerfiles/farmer-service.Dockerfile
+    ports:
+      - "3001:3001"
     environment:
       - PORT=3001
-      - MONGODB_URI=mongodb://mongodb:27017/farmers_db
-      - JWT_SECRET=dGhpcy1pcy1hLWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci10aGUtanctdC1hdXRoLXNlcnZpY2UtdG8tc2lnbi1hbmQtdmFsaWRhdGUtam9zLTM4
-    depends_on:
-      - mongodb
+      - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/farmerdb}
+      - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci10aGUtanctdC1hdXRoLXNlcnZpY2UtdG8tc2lnbi1hbmQtdmFsaWRhdGUtam9zLTM4}
     networks:
       - agri-network
 
@@ -86,25 +88,30 @@ services:
       - POSTGRES_DB=auth_db
       - POSTGRES_USER=authuser
       - POSTGRES_PASSWORD=authpassword
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - agri-network
 
-  # 8. BASE DE DONNÉES MONGODB
-  mongodb:
-    image: mongo:7-jammy
-    container_name: agri-mongodb
-    environment:
-      - MONGO_INITDB_DATABASE=farmers_db
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - agri-network
+  # 8. BASE DE DONNÉES MONGODB (Optionnel - pour développement local)
+  # Décommentez si vous n'utilisez pas MongoDB Atlas
+  # mongodb:
+  #   image: mongo:7-alpine
+  #   container_name: agri-mongodb
+  #   environment:
+  #     - MONGO_INITDB_DATABASE=farmerdb
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodb_data:/data/db
+  #   networks:
+  #     - agri-network
 
 volumes:
   postgres_data:
-  mongodb_data:
+  # mongodb_data:
 
 networks:
   agri-network:

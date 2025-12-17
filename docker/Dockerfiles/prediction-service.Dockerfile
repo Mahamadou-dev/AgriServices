@@ -7,14 +7,14 @@ RUN addgroup --system --gid 1001 python && \
     adduser --system --uid 1001 --gid 1001 python
 
 # Copier les fichiers de dépendances
-COPY services/prediction-service/requirements.txt .
+COPY requirements.txt .
 
 # Installer les dépendances
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copier le code source
-COPY services/prediction-service/ ./
+COPY . ./
 
 # Changer les permissions
 RUN chown -R python:python /app

@@ -1,51 +1,25 @@
-# File: services/prediction-service/main.py
-
-import uvicorn
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from routers import predictions
-import os
+from pydantic import BaseModel
 
-# Initialiser l'application FastAPI
-app = FastAPI(
-    title="Prediction Service API",
-    version="1.0.0",
-    description="Agricultural yield prediction and risk assessment service"
-)
+app = FastAPI(title="Prediction Service")
 
-# Configure CORS
-# WARNING: In production, replace ["*"] with specific allowed origins
-# Example: allow_origins=["https://yourdomain.com", "https://app.yourdomain.com"]
-ALLOWED_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Health check endpoint
-@app.get("/health")
-def health_check():
-    return {
-        "status": "UP",
-        "service": "Prediction Service",
-        "version": "1.0.0"
-    }
+class HelloResponse(BaseModel):
+    service: str
+    message: str
+    status: str
 
 @app.get("/")
-def read_root():
+async def root():
+    return {"message": "Prediction Service API"}
+
+@app.get("/api/predictions/hello", response_model=HelloResponse)
+async def hello():
     return {
-        "message": "Prediction Service is running",
-        "version": "1.0.0",
-        "docs": "/docs",
-        "health": "/health"
+        "service": "Prediction Service",
+        "message":  "Hello World from Prediction Service! ",
+        "status": "running"
     }
 
-# Inclure les routes du module predictions.py
-app.include_router(predictions.router, prefix="/predictions", tags=["predictions"])
-
-if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
+@app. get("/health")
+async def health():
+    return {"status": "ok"}

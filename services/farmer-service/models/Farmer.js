@@ -1,77 +1,51 @@
 const mongoose = require('mongoose');
 
+const farmSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    size: {
+        type: Number,
+        required: true
+    },
+    unit: {
+        type: String,
+        default: 'hectares'
+    },
+    location: {
+        latitude: Number,
+        longitude: Number
+    },
+    crops: [String]
+});
+
 const farmerSchema = new mongoose.Schema({
+    userId: {
+        type: String,
+        required: true
+    },
     firstName: {
         type: String,
-        required: [true, 'First name is required'],
-        trim: true,
-        minlength: [2, 'First name must be at least 2 characters long']
+        required: true
     },
     lastName: {
         type: String,
-        required: [true, 'Last name is required'],
-        trim: true,
-        minlength: [2, 'Last name must be at least 2 characters long']
-    },
-    email: {
-        type: String,
-        required: [true, 'Email is required'],
-        unique: true,
-        trim: true,
-        lowercase: true,
-        // SECURITY: Using simpler, non-ReDoS-vulnerable regex
-        // This regex is efficient and safe from exponential backtracking
-        validate: {
-            validator: function(v) {
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-            },
-            message: props => `${props.value} is not a valid email address!`
-        }
+        required: true
     },
     phone: {
         type: String,
-        required: [true, 'Phone number is required'],
-        trim: true
+        required: true
     },
-    farmName: {
-        type: String,
-        required: [true, 'Farm name is required'],
-        trim: true
+    address: {
+        street: String,
+        city: String,
+        region: String,
+        country: String
     },
-    location: {
-        type: String,
-        required: [true, 'Location is required'],
-        trim: true
-    },
-    farmSize: {
-        type: Number,
-        required: [true, 'Farm size is required'],
-        min: [0, 'Farm size must be positive']
-    },
-    farmSizeUnit: {
-        type: String,
-        enum: ['hectares', 'acres', 'square meters'],
-        default: 'hectares'
-    },
-    crops: [{
-        type: String,
-        trim: true
-    }],
-    status: {
-        type: String,
-        enum: ['active', 'inactive', 'suspended'],
-        default: 'active'
-    },
-    registrationDate: {
-        type: Date,
-        default: Date.now
-    }
+    farms: [farmSchema]
 }, {
     timestamps: true
 });
 
-farmerSchema.index({ email: 1 });
-farmerSchema.index({ lastName: 1, firstName: 1 });
-
-const Farmer = mongoose.model('Farmer', farmerSchema);
-module.exports = Farmer;
+module.exports = mongoose.model('Farmer', farmerSchema);

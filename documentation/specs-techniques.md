@@ -65,3 +65,12 @@ GATEWAY_PORT=8080
 # Database Connections (exemples)
 MONGODB_URI=mongodb://mongodb:27017/agri-platform
 POSTGRES_URL=jdbc:postgresql://postgres:5432/agri_auth
+
+
+---
+
+**📅 Dernière mise à jour** : `05/12/2025`  
+**👤 Auteur** : `MAHAMADOU AMADOU HABOU`  
+**🏷️ Version** : `1.1`
+
+---

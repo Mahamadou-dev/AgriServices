@@ -1,24 +1,24 @@
 # Étape de construction
-FROM openjdk:25-jdk-slim AS builder
+FROM openjdk:21-jdk-slim AS builder
 
 WORKDIR /app
 
 # Copier les fichiers de configuration Maven
-COPY services/crop-service/pom.xml .
-COPY services/crop-service/mvnw .
-COPY services/crop-service/.mvn .mvn
+COPY pom.xml .
+COPY mvnw .
+COPY .mvn .mvn
 
 # Télécharger les dépendances
 RUN ./mvnw dependency:go-offline -B
 
 # Copier le code source
-COPY services/crop-service/src ./src
+COPY src ./src
 
 # Construire l'application
 RUN ./mvnw clean package -DskipTests
 
 # Étape d'exécution
-FROM openjdk:25-jre-slim
+FROM openjdk:21-jre-slim
 
 WORKDIR /app
 
