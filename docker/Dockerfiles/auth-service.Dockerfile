@@ -1,34 +1,26 @@
 #
-# Stage 1: Étape de construction (Utilise JDK 17)
+# Stage 1: Étape de construction (Utilise Maven + JDK 17)
 #
-FROM openjdk:17-jdk-slim AS builder
+FROM maven:3.9-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
-# Copier les fichiers de configuration Maven
-COPY pom.xml .
-COPY mvnw .
-COPY .mvn .mvn
+# Copier tout le code source
+COPY . .
 
-# Télécharger les dépendances
-RUN ./mvnw dependency:go-offline -B
-
-# Copier le code source
-COPY src ./src
-
-# Construire l'application
-RUN ./mvnw clean package -DskipTests
+# Construire l'application avec Maven
+RUN mvn clean package -DskipTests
 
 #
 # Stage 2: Étape d'exécution (Utilise JRE 17)
 #
-FROM openjdk:17-jre-slim
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
 # Créer un utilisateur non-root
-RUN addgroup --system --gid 1001 spring && \
-    adduser --system --uid 1001 --gid 1001 spring
+RUN groupadd -r -g 1001 spring && \
+    useradd -r -u 1001 -g spring spring
 
 # Copier le JAR depuis l'étape de construction
 COPY --from=builder /app/target/*.jar app.jar

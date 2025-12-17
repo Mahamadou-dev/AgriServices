@@ -1,30 +1,22 @@
 # Étape de construction
-FROM openjdk:21-jdk-slim AS builder
+FROM maven:3.9-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
-# Copier les fichiers de configuration Maven
-COPY pom.xml .
-COPY mvnw .
-COPY .mvn .mvn
+# Copier tout le code source
+COPY . .
 
-# Télécharger les dépendances
-RUN ./mvnw dependency:go-offline -B
-
-# Copier le code source
-COPY src ./src
-
-# Construire l'application
-RUN ./mvnw clean package -DskipTests
+# Construire l'application avec Maven
+RUN mvn clean package -DskipTests
 
 # Étape d'exécution
-FROM openjdk:21-jre-slim
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
 # Créer un utilisateur non-root
-RUN addgroup --system --gid 1001 appuser && \
-    adduser --system --uid 1001 --gid 1001 appuser
+RUN groupadd -r -g 1001 appuser && \
+    useradd -r -u 1001 -g appuser appuser
 
 # Copier le JAR depuis l'étape de construction
 COPY --from=builder /app/target/*.jar app.jar
