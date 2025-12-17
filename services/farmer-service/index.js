@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
 const farmerRoutes = require('./routes/farmers');
 
 // Charger les variables d'environnement
@@ -11,6 +12,19 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://mongodb:27017/farmers_db';
+
+// Rate limiting configuration
+// SECURITY: Protect against brute force and DoS attacks
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+// Apply rate limiting to all routes
+app.use(limiter);
 
 // Middleware
 app.use(cors());
@@ -65,6 +79,7 @@ const startServer = async () => {
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`🚀 Farmer Service running on port ${PORT}`);
             console.log(`📊 Health check: http://localhost:${PORT}/health`);
+            console.log(`🛡️  Rate limiting: 100 requests per 15 minutes`);
         });
     } catch (error) {
         console.error('❌ Failed to start server:', error);

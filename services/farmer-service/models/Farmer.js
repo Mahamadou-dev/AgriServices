@@ -19,7 +19,14 @@ const farmerSchema = new mongoose.Schema({
         unique: true,
         trim: true,
         lowercase: true,
-        match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email']
+        // SECURITY: Using simpler, non-ReDoS-vulnerable regex
+        // This regex is efficient and safe from exponential backtracking
+        validate: {
+            validator: function(v) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+            },
+            message: props => `${props.value} is not a valid email address!`
+        }
     },
     phone: {
         type: String,
