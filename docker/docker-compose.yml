@@ -19,6 +19,10 @@ services:
       dockerfile: ../../docker/Dockerfiles/farmer-service.Dockerfile
     environment:
       - PORT=3001
+      - MONGODB_URI=mongodb://mongodb:27017/farmers_db
+      - JWT_SECRET=dGhpcy1pcy1hLWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci10aGUtanctdC1hdXRoLXNlcnZpY2UtdG8tc2lnbi1hbmQtdmFsaWRhdGUtam9zLTM4
+    depends_on:
+      - mongodb
     networks:
       - agri-network
 
@@ -87,8 +91,20 @@ services:
     networks:
       - agri-network
 
+  # 8. BASE DE DONNÉES MONGODB
+  mongodb:
+    image: mongo:7-jammy
+    container_name: agri-mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=farmers_db
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - agri-network
+
 volumes:
   postgres_data:
+  mongodb_data:
 
 networks:
   agri-network:
