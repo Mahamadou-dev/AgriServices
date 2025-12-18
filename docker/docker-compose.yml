@@ -33,6 +33,8 @@ services:
     build:
       context: ../services/crop-service
       dockerfile: ../../docker/Dockerfiles/crop-service.Dockerfile
+    ports: 
+      - "8082:8082"
     environment:
       - SERVICE_URL=http://0.0.0.0:8082/CropService
     networks:
@@ -53,6 +55,8 @@ services:
     build:
       context: ../services/billing-service
       dockerfile: ../../docker/Dockerfiles/billing-service.Dockerfile
+    ports: 
+      - "8085:8085"
     environment:
       - ASPNETCORE_URLS=http://+:8085
     networks:
