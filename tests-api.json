@@ -1,0 +1,626 @@
+{
+  "info": {
+    "name": "AgriServices API Tests Collection",
+    "version": "1.0.0",
+    "description": "Collection complète de tests pour tous les services AgriServices",
+    "author": "MAHAMADOU AMADOU HABOU",
+    "updated": "2025-12-18"
+  },
+  "baseUrls": {
+    "gateway": "http://localhost:8080",
+    "auth": "http://localhost:8081",
+    "farmer": "http://localhost:3001",
+    "prediction": "http://localhost:8000",
+    "crop": "http://localhost:8082",
+    "billing": "http://localhost:8085"
+  },
+  "tests": {
+    "01_health_checks": {
+      "description": "Vérifier que tous les services sont opérationnels",
+      "tests": [
+        {
+          "name": "Health Check - API Gateway",
+          "method": "GET",
+          "url": "{{gateway}}/health",
+          "expected_status": 200,
+          "expected_response": {
+            "status": "ok"
+          }
+        },
+        {
+          "name": "Health Check - Auth Service",
+          "method": "GET",
+          "url": "{{auth}}/auth/health",
+          "expected_status": 200
+        },
+        {
+          "name": "Health Check - Farmer Service",
+          "method": "GET",
+          "url": "{{farmer}}/health",
+          "expected_status": 200
+        },
+        {
+          "name": "Health Check - Prediction Service",
+          "method": "GET",
+          "url": "{{prediction}}/health",
+          "expected_status": 200,
+          "expected_response": {
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    "02_auth_service": {
+      "description": "Tests du service d'authentification",
+      "tests": [
+        {
+          "name": "Register - Nouveau utilisateur FARMER",
+          "method": "POST",
+          "url": "{{gateway}}/auth/register",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "username": "john_farmer",
+            "email": "john.farmer@agri.com",
+            "password": "SecurePass123!",
+            "role": "FARMER"
+          },
+          "expected_status": 201,
+          "save_variable": {
+            "farmer_token": "token"
+          }
+        },
+        {
+          "name": "Register - Nouveau utilisateur EXPERT",
+          "method": "POST",
+          "url": "{{gateway}}/auth/register",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "username": "expert_alice",
+            "email": "alice.expert@agri.com",
+            "password": "ExpertPass456!",
+            "role": "EXPERT"
+          },
+          "expected_status": 201
+        },
+        {
+          "name": "Register - Nouveau utilisateur ADMIN",
+          "method": "POST",
+          "url": "{{gateway}}/auth/register",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "username": "admin_user",
+            "email": "admin@agri.com",
+            "password": "AdminPass789!",
+            "role": "ADMIN"
+          },
+          "expected_status": 201
+        },
+        {
+          "name": "Login - Connexion utilisateur FARMER",
+          "method": "POST",
+          "url": "{{gateway}}/auth/login",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "username": "john_farmer",
+            "password": "SecurePass123!"
+          },
+          "expected_status": 200,
+          "save_variable": {
+            "auth_token": "token"
+          }
+        },
+        {
+          "name": "Login - Mauvais mot de passe (Test négatif)",
+          "method": "POST",
+          "url": "{{gateway}}/auth/login",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "username": "john_farmer",
+            "password": "WrongPassword123!"
+          },
+          "expected_status": 401
+        },
+        {
+          "name": "Validate Token - Token valide",
+          "method": "GET",
+          "url": "{{gateway}}/auth/validate",
+          "headers": {
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Validate Token - Token invalide (Test négatif)",
+          "method": "GET",
+          "url": "{{gateway}}/auth/validate",
+          "headers": {
+            "Authorization": "Bearer invalid_token_12345"
+          },
+          "expected_status": 401
+        }
+      ]
+    },
+    "03_farmer_service": {
+      "description": "Tests du service de gestion des agriculteurs",
+      "tests": [
+        {
+          "name": "Create Farmer - Nouvel agriculteur complet",
+          "method": "POST",
+          "url": "{{gateway}}/api/farmers",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "body": {
+            "userId": "john_farmer",
+            "firstName": "John",
+            "lastName": "Doe",
+            "email": "john.farmer@agri.com",
+            "phone": "+33612345678",
+            "address": {
+              "street": "123 Rue de la Ferme",
+              "city": "Lyon",
+              "state": "Rhône",
+              "postalCode": "69000",
+              "country": "France"
+            },
+            "farms": [
+              {
+                "name": "Ferme du Soleil",
+                "size": 50.5,
+                "location": {
+                  "latitude": 45.7578,
+                  "longitude": 4.8320
+                }
+              }
+            ]
+          },
+          "expected_status": 201,
+          "save_variable": {
+            "farmer_id": "_id"
+          }
+        },
+        {
+          "name": "Create Farmer - Agriculteur simple",
+          "method": "POST",
+          "url": "{{gateway}}/api/farmers",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "body": {
+            "userId": "expert_alice",
+            "firstName": "Alice",
+            "lastName": "Martin",
+            "email": "alice.martin@agri.com",
+            "phone": "+33687654321",
+            "address": {
+              "city": "Toulouse",
+              "country": "France"
+            }
+          },
+          "expected_status": 201,
+          "save_variable": {
+            "farmer_id_2": "_id"
+          }
+        },
+        {
+          "name": "Get All Farmers - Liste complète",
+          "method": "GET",
+          "url": "{{gateway}}/api/farmers",
+          "headers": {
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Get Farmer by ID - Récupération d'un agriculteur",
+          "method": "GET",
+          "url": "{{gateway}}/api/farmers/{{farmer_id}}",
+          "headers": {
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Update Farmer - Mise à jour informations",
+          "method": "PUT",
+          "url": "{{gateway}}/api/farmers/{{farmer_id}}",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "body": {
+            "phone": "+33698765432",
+            "farms": [
+              {
+                "name": "Ferme du Soleil",
+                "size": 55.0,
+                "location": {
+                  "latitude": 45.7578,
+                  "longitude": 4.8320
+                }
+              },
+              {
+                "name": "Nouvelle Parcelle",
+                "size": 10.5,
+                "location": {
+                  "latitude": 45.7600,
+                  "longitude": 4.8350
+                }
+              }
+            ]
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Get Farmer - Vérifier mise à jour",
+          "method": "GET",
+          "url": "{{gateway}}/api/farmers/{{farmer_id}}",
+          "headers": {
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Get Farmer - ID inexistant (Test négatif)",
+          "method": "GET",
+          "url": "{{gateway}}/api/farmers/000000000000000000000000",
+          "headers": {
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "expected_status": 404
+        },
+        {
+          "name": "Create Farmer - Sans authentification (Test négatif)",
+          "method": "POST",
+          "url": "{{gateway}}/api/farmers",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "userId": "test_user",
+            "firstName": "Test",
+            "lastName": "User"
+          },
+          "expected_status": 401
+        }
+      ]
+    },
+    "04_prediction_service": {
+      "description": "Tests du service de prédictions agricoles",
+      "tests": [
+        {
+          "name": "Predict Yield - Culture de blé optimale",
+          "method": "POST",
+          "url": "{{gateway}}/api/predict/yield",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "body": {
+            "crop_type": "wheat",
+            "area_hectares": 10.5,
+            "soil_type": "loamy",
+            "rainfall_mm": 600,
+            "temperature_c": 25,
+            "fertilizer_used": true
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Predict Yield - Culture de maïs",
+          "method": "POST",
+          "url": "{{gateway}}/api/predict/yield",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "body": {
+            "crop_type": "corn",
+            "area_hectares": 5.0,
+            "soil_type": "clay",
+            "rainfall_mm": 500,
+            "temperature_c": 28,
+            "fertilizer_used": true
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Predict Yield - Conditions sous-optimales",
+          "method": "POST",
+          "url": "{{gateway}}/api/predict/yield",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "body": {
+            "crop_type": "rice",
+            "area_hectares": 8.0,
+            "soil_type": "sandy",
+            "rainfall_mm": 250,
+            "temperature_c": 38,
+            "fertilizer_used": false
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Risk Assessment - Conditions à risque élevé",
+          "method": "POST",
+          "url": "{{gateway}}/api/predict/risk",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "body": {
+            "crop_type": "soybean",
+            "area_hectares": 12.0,
+            "soil_type": "sandy",
+            "rainfall_mm": 200,
+            "temperature_c": 40,
+            "fertilizer_used": false
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Risk Assessment - Conditions optimales",
+          "method": "POST",
+          "url": "{{gateway}}/api/predict/risk",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "body": {
+            "crop_type": "wheat",
+            "area_hectares": 15.0,
+            "soil_type": "loamy",
+            "rainfall_mm": 650,
+            "temperature_c": 22,
+            "fertilizer_used": true
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Prediction History - Récupération historique",
+          "method": "GET",
+          "url": "{{gateway}}/api/predict/history?limit=10",
+          "headers": {
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Predict Yield - Validation erreur (Test négatif)",
+          "method": "POST",
+          "url": "{{gateway}}/api/predict/yield",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{auth_token}}"
+          },
+          "body": {
+            "crop_type": "wheat",
+            "area_hectares": -5.0,
+            "soil_type": "loamy"
+          },
+          "expected_status": 422
+        }
+      ]
+    },
+    "05_crop_service_soap": {
+      "description": "Tests du service SOAP de gestion des cultures",
+      "soap_endpoint": "{{crop}}/crop",
+      "wsdl": "{{crop}}/crop?wsdl",
+      "tests": [
+        {
+          "name": "Hello - Test connexion SOAP",
+          "method": "SOAP",
+          "operation": "hello",
+          "soap_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:crop=\"http://crop.agriservices.com/\"><soapenv:Header/><soapenv:Body><crop:hello/></soapenv:Body></soapenv:Envelope>",
+          "expected_status": 200
+        },
+        {
+          "name": "Create Crop - Nouvelle culture blé",
+          "method": "SOAP",
+          "operation": "createCrop",
+          "soap_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:crop=\"http://crop.agriservices.com/\"><soapenv:Header/><soapenv:Body><crop:createCrop><name>Winter Wheat Premium</name><type>Cereal</type><diseaseStatus>Healthy</diseaseStatus></crop:createCrop></soapenv:Body></soapenv:Envelope>",
+          "expected_status": 200
+        },
+        {
+          "name": "Get Crop - Récupération culture par ID",
+          "method": "SOAP",
+          "operation": "getCrop",
+          "soap_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:crop=\"http://crop.agriservices.com/\"><soapenv:Header/><soapenv:Body><crop:getCrop><id>1</id></crop:getCrop></soapenv:Body></soapenv:Envelope>",
+          "expected_status": 200
+        },
+        {
+          "name": "List Crops - Liste toutes les cultures",
+          "method": "SOAP",
+          "operation": "listCrops",
+          "soap_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:crop=\"http://crop.agriservices.com/\"><soapenv:Header/><soapenv:Body><crop:listCrops/></soapenv:Body></soapenv:Envelope>",
+          "expected_status": 200
+        },
+        {
+          "name": "Update Crop - Mise à jour statut maladie",
+          "method": "SOAP",
+          "operation": "updateCrop",
+          "soap_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:crop=\"http://crop.agriservices.com/\"><soapenv:Header/><soapenv:Body><crop:updateCrop><id>1</id><name>Winter Wheat Premium</name><type>Cereal</type><diseaseStatus>Under Treatment</diseaseStatus></crop:updateCrop></soapenv:Body></soapenv:Envelope>",
+          "expected_status": 200
+        },
+        {
+          "name": "Delete Crop - Suppression culture",
+          "method": "SOAP",
+          "operation": "deleteCrop",
+          "soap_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:crop=\"http://crop.agriservices.com/\"><soapenv:Header/><soapenv:Body><crop:deleteCrop><id>3</id></crop:deleteCrop></soapenv:Body></soapenv:Envelope>",
+          "expected_status": 200
+        }
+      ]
+    },
+    "06_billing_service_soap": {
+      "description": "Tests du service SOAP de facturation",
+      "soap_endpoint": "{{billing}}/billing",
+      "wsdl": "{{billing}}/billing?wsdl",
+      "tests": [
+        {
+          "name": "Get Invoice Details - Récupération facture existante",
+          "method": "SOAP",
+          "operation": "GetInvoiceDetailsAsync",
+          "soap_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\"><soapenv:Header/><soapenv:Body><tem:GetInvoiceDetailsAsync><tem:invoiceId>101</tem:invoiceId></tem:GetInvoiceDetailsAsync></soapenv:Body></soapenv:Envelope>",
+          "expected_status": 200
+        },
+        {
+          "name": "Generate New Invoice - Agriculteur John Doe",
+          "method": "SOAP",
+          "operation": "GenerateNewInvoiceAsync",
+          "soap_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\"><soapenv:Header/><soapenv:Body><tem:GenerateNewInvoiceAsync><tem:farmerName>John Doe</tem:farmerName><tem:amount>1250.75</tem:amount></tem:GenerateNewInvoiceAsync></soapenv:Body></soapenv:Envelope>",
+          "expected_status": 200
+        },
+        {
+          "name": "Generate New Invoice - Agriculteur Alice Martin",
+          "method": "SOAP",
+          "operation": "GenerateNewInvoiceAsync",
+          "soap_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\"><soapenv:Header/><soapenv:Body><tem:GenerateNewInvoiceAsync><tem:farmerName>Alice Martin</tem:farmerName><tem:amount>850.50</tem:amount></tem:GenerateNewInvoiceAsync></soapenv:Body></soapenv:Envelope>",
+          "expected_status": 200
+        },
+        {
+          "name": "Get Invoice Details - Facture générée",
+          "method": "SOAP",
+          "operation": "GetInvoiceDetailsAsync",
+          "soap_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\"><soapenv:Header/><soapenv:Body><tem:GetInvoiceDetailsAsync><tem:invoiceId>102</tem:invoiceId></tem:GetInvoiceDetailsAsync></soapenv:Body></soapenv:Envelope>",
+          "expected_status": 200
+        }
+      ]
+    },
+    "07_integration_workflow": {
+      "description": "Tests de workflow complet - Scénario d'utilisation réel",
+      "tests": [
+        {
+          "name": "Workflow Step 1 - Inscription nouvel agriculteur",
+          "method": "POST",
+          "url": "{{gateway}}/auth/register",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "username": "workflow_farmer",
+            "email": "workflow@agri.com",
+            "password": "Workflow123!",
+            "role": "FARMER"
+          },
+          "expected_status": 201
+        },
+        {
+          "name": "Workflow Step 2 - Connexion",
+          "method": "POST",
+          "url": "{{gateway}}/auth/login",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "username": "workflow_farmer",
+            "password": "Workflow123!"
+          },
+          "expected_status": 200,
+          "save_variable": {
+            "workflow_token": "token"
+          }
+        },
+        {
+          "name": "Workflow Step 3 - Création profil agriculteur",
+          "method": "POST",
+          "url": "{{gateway}}/api/farmers",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{workflow_token}}"
+          },
+          "body": {
+            "userId": "workflow_farmer",
+            "firstName": "Jean",
+            "lastName": "Dupont",
+            "email": "workflow@agri.com",
+            "phone": "+33645678901",
+            "address": {
+              "city": "Bordeaux",
+              "country": "France"
+            },
+            "farms": [
+              {
+                "name": "Vignoble Dupont",
+                "size": 25.0,
+                "location": {
+                  "latitude": 44.8378,
+                  "longitude": -0.5792
+                }
+              }
+            ]
+          },
+          "expected_status": 201,
+          "save_variable": {
+            "workflow_farmer_id": "_id"
+          }
+        },
+        {
+          "name": "Workflow Step 4 - Prédiction rendement",
+          "method": "POST",
+          "url": "{{gateway}}/api/predict/yield",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{workflow_token}}"
+          },
+          "body": {
+            "crop_type": "wheat",
+            "area_hectares": 25.0,
+            "soil_type": "loamy",
+            "rainfall_mm": 550,
+            "temperature_c": 23,
+            "fertilizer_used": true
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Workflow Step 5 - Évaluation des risques",
+          "method": "POST",
+          "url": "{{gateway}}/api/predict/risk",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{workflow_token}}"
+          },
+          "body": {
+            "crop_type": "wheat",
+            "area_hectares": 25.0,
+            "soil_type": "loamy",
+            "rainfall_mm": 550,
+            "temperature_c": 23,
+            "fertilizer_used": true
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Workflow Step 6 - Vérification profil agriculteur",
+          "method": "GET",
+          "url": "{{gateway}}/api/farmers/{{workflow_farmer_id}}",
+          "headers": {
+            "Authorization": "Bearer {{workflow_token}}"
+          },
+          "expected_status": 200
+        }
+      ]
+    }
+  },
+  "notes": {
+    "usage": "Ce fichier contient tous les tests API pour le système AgriServices",
+    "ordre_execution": "Exécuter les tests dans l'ordre numérique pour garantir la cohérence",
+    "variables": "Les variables entre {{}} sont remplacées dynamiquement pendant les tests",
+    "soap_tests": "Les tests SOAP nécessitent un client SOAP (SoapUI, Postman, ou curl avec XML)",
+    "auth_required": "La plupart des endpoints nécessitent un token JWT valide dans le header Authorization"
+  }
+}

@@ -36,13 +36,13 @@ def get_prediction_info():
         "version": "1.0.0",
         "description": "Agricultural yield prediction and risk assessment API",
         "endpoints": {
-            "/predict": "POST - Make yield prediction",
-            "/risk-assessment": "POST - Assess crop risks",
+            "/yield": "POST - Make yield prediction",
+            "/risk": "POST - Assess crop risks",
             "/history": "GET - View prediction history"
         }
     }
 
-@router.post("/predict", response_model=PredictionResponse, summary="Predict crop yield")
+@router.post("/yield", response_model=PredictionResponse, summary="Predict crop yield")
 def predict_yield(crop_data: CropData):
     """
     Predict crop yield based on input parameters.
@@ -94,7 +94,7 @@ def predict_yield(crop_data: CropData):
         timestamp=datetime.now()
     )
 
-@router.post("/risk-assessment", response_model=RiskAssessment, summary="Assess crop risks")
+@router.post("/risk", response_model=RiskAssessment, summary="Assess crop risks")
 def assess_risk(crop_data: CropData):
     """Assess potential risks for the crop based on conditions."""
     risk_factors = []
