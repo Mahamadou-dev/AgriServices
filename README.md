@@ -111,12 +111,20 @@ curl http://localhost:8080/health
 
 Documentation complète disponible dans le dossier `/documentation` :
 
+### 🚀 Guides de Démarrage
+- **[Démarrage Local](documentation/DEMARRAGE-LOCAL.md)** - Guide complet pour démarrer tous les services
+- **[Guide de Tests](documentation/GUIDE-TESTS.md)** - Instructions détaillées pour tester chaque service
+
+### 📚 Documentation Technique
 - **[Cahier des charges](documentation/cahier-des-charges.md)** - Spécifications du projet
 - **[Spécifications techniques](documentation/specs-techniques.md)** - Détails techniques
 - **[Manuel d'utilisation](documentation/manuel-utilisation.md)** - Guide utilisateur complet
 - **[Conception système](documentation/CONCEPTION-SYSTEME.md)** - Architecture et design
+
+### ⚙️ Configuration
 - **[Setup MongoDB Atlas](documentation/SETUP-MONGODB-ATLAS.md)** - Configuration MongoDB
 - **[Guide équipe développement](documentation/GUIDE-EQUIPE-DEVELOPPEMENT.md)** - Guide pour les développeurs
+- **[Guide de déploiement](documentation/guide-deploiement.md)** - Déploiement en production
 
 ---
 
@@ -188,16 +196,21 @@ Voir le [Manuel d'utilisation](documentation/manuel-utilisation.md) pour des exe
 
 ## 🧪 Tests
 
-```bash
-# Tester le workflow complet
-cd docker
-./test-workflow.sh
+Le projet inclut un fichier de tests complet `tests-api.json` avec des exemples pour tous les services.
 
-# Tester un service individuel
-curl http://localhost:8081/health  # Auth
-curl http://localhost:3001/health  # Farmer
+```bash
+# Vérifier la santé de tous les services
 curl http://localhost:8080/health  # Gateway
+curl http://localhost:8081/auth/health  # Auth
+curl http://localhost:3001/health  # Farmer
+curl http://localhost:8000/health  # Prediction
+curl http://localhost:8082/crop?wsdl  # Crop WSDL
+curl http://localhost:8085/billing?wsdl  # Billing WSDL
 ```
+
+**Voir les guides détaillés:**
+- **[Guide de Tests Complet](documentation/GUIDE-TESTS.md)** - Instructions détaillées pour tester chaque service
+- **[Fichier de Tests JSON](tests-api.json)** - Collection complète de tests API
 
 ---
 

@@ -8,7 +8,12 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["farmer", "agriculture", "rest-api", "express"],
+  "keywords": [
+    "farmer",
+    "agriculture",
+    "rest-api",
+    "express"
+  ],
   "author": "MAHAMADOU AMADOU HABOU",
   "license": "ISC",
   "type": "commonjs",
@@ -16,7 +21,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "express-rate-limit": "^7.1.5",
+    "express-rate-limit": "^7.5.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.0.0"
   }
