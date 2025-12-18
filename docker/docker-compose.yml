@@ -47,6 +47,7 @@ services:
       dockerfile: ../../docker/Dockerfiles/prediction-service.Dockerfile
     environment:
       - PORT=8000
+      - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci10aGUtanctdC1hdXRoLXNlcnZpY2UtdG8tc2lnbi1hbmQtdmFsaWRhdGUtam9zLTM4}
     networks:
       - agri-network
 
