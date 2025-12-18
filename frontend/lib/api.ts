@@ -151,3 +151,227 @@ export const predictionAPI = {
 
   getHistory: () => apiCall('/api/predict/history'),
 };
+
+// Helper function to escape XML special characters
+const escapeXml = (unsafe: string | number): string => {
+  const str = String(unsafe);
+  return str.replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '\'': return '&apos;';
+      case '"': return '&quot;';
+      default: return c;
+    }
+  });
+};
+
+// Crop API (SOAP)
+interface CropParams {
+  id?: number;
+  name?: string;
+  type?: string;
+  diseaseStatus?: string;
+}
+
+export const cropAPI = {
+  // SOAP service wrapper - sends XML requests
+  callSOAP: async (operation: string, params: CropParams) => {
+    let soapBody = '';
+    
+    switch (operation) {
+      case 'listCrops':
+        soapBody = '<crop:listCrops/>';
+        break;
+      case 'getCrop':
+        soapBody = `<crop:getCrop><id>${escapeXml(params.id!)}</id></crop:getCrop>`;
+        break;
+      case 'createCrop':
+        soapBody = `<crop:createCrop>
+          <name>${escapeXml(params.name!)}</name>
+          <type>${escapeXml(params.type!)}</type>
+          <diseaseStatus>${escapeXml(params.diseaseStatus!)}</diseaseStatus>
+        </crop:createCrop>`;
+        break;
+      case 'updateCrop':
+        soapBody = `<crop:updateCrop>
+          <id>${escapeXml(params.id!)}</id>
+          <name>${escapeXml(params.name!)}</name>
+          <type>${escapeXml(params.type!)}</type>
+          <diseaseStatus>${escapeXml(params.diseaseStatus!)}</diseaseStatus>
+        </crop:updateCrop>`;
+        break;
+      case 'deleteCrop':
+        soapBody = `<crop:deleteCrop><id>${escapeXml(params.id!)}</id></crop:deleteCrop>`;
+        break;
+    }
+
+    const soapEnvelope = `<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+                  xmlns:crop="http://crop.agriservices.com/">
+  <soapenv:Header/>
+  <soapenv:Body>
+    ${soapBody}
+  </soapenv:Body>
+</soapenv:Envelope>`;
+
+    const response = await fetch(`${API_BASE_URL}/crop`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/xml',
+        'SOAPAction': operation,
+      },
+      body: soapEnvelope,
+    });
+
+    const text = await response.text();
+    return text;
+  },
+
+  listCrops: async () => {
+    const result = await cropAPI.callSOAP('listCrops', {});
+    return cropAPI.parseListCropsResponse(result);
+  },
+
+  getCrop: async (id: number) => {
+    return await cropAPI.callSOAP('getCrop', { id });
+  },
+
+  createCrop: async (data: { name: string; type: string; diseaseStatus: string }) => {
+    return await cropAPI.callSOAP('createCrop', data);
+  },
+
+  updateCrop: async (id: number, data: { name: string; type: string; diseaseStatus: string }) => {
+    return await cropAPI.callSOAP('updateCrop', { id, ...data });
+  },
+
+  deleteCrop: async (id: number) => {
+    return await cropAPI.callSOAP('deleteCrop', { id });
+  },
+
+  // Parse SOAP response for list of crops
+  parseListCropsResponse: (xml: string) => {
+    try {
+      // Extract the return content from SOAP response
+      const returnMatch = xml.match(/<return>([\s\S]*?)<\/return>/);
+      if (!returnMatch) return [];
+      
+      const content = returnMatch[1];
+      const lines = content.split('\n').map(l => l.trim()).filter(l => l);
+      
+      const crops = [];
+      for (const line of lines) {
+        // Match pattern: ID: 1, Name: Winter Wheat, Type: Cereal, Disease Status: Healthy
+        const match = line.match(/ID:\s*(\d+),\s*Name:\s*([^,]+),\s*Type:\s*([^,]+),\s*Disease Status:\s*(.+)/);
+        if (match) {
+          crops.push({
+            id: parseInt(match[1]),
+            name: match[2].trim(),
+            type: match[3].trim(),
+            diseaseStatus: match[4].trim(),
+          });
+        }
+      }
+      return crops;
+    } catch (error) {
+      console.error('Error parsing crops response:', error);
+      return [];
+    }
+  },
+};
+
+// Billing API (SOAP)
+interface BillingParams {
+  invoiceId?: number;
+  farmerName?: string;
+  amount?: number;
+}
+
+export const billingAPI = {
+  callSOAP: async (operation: string, params: BillingParams) => {
+    let soapBody = '';
+    
+    switch (operation) {
+      case 'GetInvoiceDetailsAsync':
+        soapBody = `<tem:GetInvoiceDetailsAsync>
+          <tem:invoiceId>${escapeXml(params.invoiceId!)}</tem:invoiceId>
+        </tem:GetInvoiceDetailsAsync>`;
+        break;
+      case 'GenerateNewInvoiceAsync':
+        soapBody = `<tem:GenerateNewInvoiceAsync>
+          <tem:farmerName>${escapeXml(params.farmerName!)}</tem:farmerName>
+          <tem:amount>${escapeXml(params.amount!)}</tem:amount>
+        </tem:GenerateNewInvoiceAsync>`;
+        break;
+    }
+
+    const soapEnvelope = `<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+                  xmlns:tem="http://tempuri.org/">
+  <soapenv:Header/>
+  <soapenv:Body>
+    ${soapBody}
+  </soapenv:Body>
+</soapenv:Envelope>`;
+
+    const response = await fetch(`${API_BASE_URL}/billing`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/xml',
+        'SOAPAction': `http://tempuri.org/IBillingService/${operation}`,
+      },
+      body: soapEnvelope,
+    });
+
+    const text = await response.text();
+    return text;
+  },
+
+  getInvoiceDetails: async (invoiceId: number) => {
+    const result = await billingAPI.callSOAP('GetInvoiceDetailsAsync', { invoiceId });
+    return billingAPI.parseInvoiceDetailsResponse(result);
+  },
+
+  generateNewInvoice: async (farmerName: string, amount: number) => {
+    const result = await billingAPI.callSOAP('GenerateNewInvoiceAsync', { farmerName, amount });
+    return billingAPI.parseGenerateInvoiceResponse(result);
+  },
+
+  // Parse SOAP response for invoice details
+  parseInvoiceDetailsResponse: (xml: string) => {
+    try {
+      const idMatch = xml.match(/<Id>(\d+)<\/Id>/);
+      const nameMatch = xml.match(/<FarmerName>([^<]+)<\/FarmerName>/);
+      const amountMatch = xml.match(/<Amount>([\d.]+)<\/Amount>/);
+      const dateMatch = xml.match(/<IssueDate>([^<]+)<\/IssueDate>/);
+      
+      if (idMatch && nameMatch && amountMatch && dateMatch) {
+        return {
+          id: parseInt(idMatch[1]),
+          farmerName: nameMatch[1],
+          amount: parseFloat(amountMatch[1]),
+          issueDate: dateMatch[1],
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Error parsing invoice details:', error);
+      return null;
+    }
+  },
+
+  // Parse SOAP response for generate invoice
+  parseGenerateInvoiceResponse: (xml: string) => {
+    try {
+      const resultMatch = xml.match(/<GenerateNewInvoiceAsyncResult>([^<]+)<\/GenerateNewInvoiceAsyncResult>/);
+      if (resultMatch) {
+        return resultMatch[1].trim();
+      }
+      return 'Invoice generated successfully';
+    } catch (error) {
+      console.error('Error parsing generate invoice response:', error);
+      return 'Invoice generated';
+    }
+  },
+};

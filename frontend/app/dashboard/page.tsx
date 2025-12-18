@@ -37,6 +37,16 @@ export default function DashboardPage() {
             </Card>
           </Link>
 
+          <Link href="/crops">
+            <Card className="hover:shadow-lg transition cursor-pointer h-full">
+              <div className="text-center">
+                <div className="text-5xl mb-4">🌱</div>
+                <h3 className="text-xl font-bold mb-2">Cultures</h3>
+                <p className="text-gray-600">Gérer les cultures (Service SOAP)</p>
+              </div>
+            </Card>
+          </Link>
+
           <Link href="/predictions">
             <Card className="hover:shadow-lg transition cursor-pointer h-full">
               <div className="text-center">
@@ -47,21 +57,15 @@ export default function DashboardPage() {
             </Card>
           </Link>
 
-          <Card className="hover:shadow-lg transition h-full">
-            <div className="text-center">
-              <div className="text-5xl mb-4">🌱</div>
-              <h3 className="text-xl font-bold mb-2">Cultures</h3>
-              <p className="text-gray-600">Service SOAP - À venir</p>
-            </div>
-          </Card>
-
-          <Card className="hover:shadow-lg transition h-full">
-            <div className="text-center">
-              <div className="text-5xl mb-4">💰</div>
-              <h3 className="text-xl font-bold mb-2">Facturation</h3>
-              <p className="text-gray-600">Service SOAP - À venir</p>
-            </div>
-          </Card>
+          <Link href="/billing">
+            <Card className="hover:shadow-lg transition cursor-pointer h-full">
+              <div className="text-center">
+                <div className="text-5xl mb-4">💰</div>
+                <h3 className="text-xl font-bold mb-2">Facturation</h3>
+                <p className="text-gray-600">Gérer les factures (Service SOAP)</p>
+              </div>
+            </Card>
+          </Link>
 
           <Card className="hover:shadow-lg transition h-full">
             <div className="text-center">
@@ -95,6 +99,18 @@ export default function DashboardPage() {
               </div>
             </Link>
             <Link
+              href="/crops"
+              className="block p-4 border border-gray-200 rounded-md hover:bg-gray-50 transition"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Ajouter une culture</h4>
+                  <p className="text-sm text-gray-600">Créer une nouvelle culture</p>
+                </div>
+                <span className="text-2xl">🌱</span>
+              </div>
+            </Link>
+            <Link
               href="/predictions"
               className="block p-4 border border-gray-200 rounded-md hover:bg-gray-50 transition"
             >
@@ -104,6 +120,18 @@ export default function DashboardPage() {
                   <p className="text-sm text-gray-600">Estimer le rendement</p>
                 </div>
                 <span className="text-2xl">🔮</span>
+              </div>
+            </Link>
+            <Link
+              href="/billing"
+              className="block p-4 border border-gray-200 rounded-md hover:bg-gray-50 transition"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Générer une facture</h4>
+                  <p className="text-sm text-gray-600">Créer une nouvelle facture</p>
+                </div>
+                <span className="text-2xl">💰</span>
               </div>
             </Link>
           </div>
