@@ -4,14 +4,14 @@ using System.Runtime.Serialization;
 
 namespace Models
 {
-    [DataContract] // Marque cette classe pour la sérialisation WCF
+    [DataContract] // Marque cette classe pour la sï¿½rialisation WCF
     public class Invoice
     {
         [DataMember]
         public int Id { get; set; }
 
         [DataMember]
-        public string FarmerName { get; set; }
+        public string FarmerName { get; set; } = string.Empty;
 
         [DataMember]
         public decimal Amount { get; set; }
