@@ -29,4 +29,4 @@ COPY --from=build /app/publish .
 RUN chown -R appuser:appuser /app
 USER appuser
 
-ENTRYPOINT ["dotnet", "billing-service.dll"]
+ENTRYPOINT ["dotnet", "BillingService.dll"]
