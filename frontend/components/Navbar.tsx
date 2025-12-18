@@ -46,12 +46,28 @@ export default function Navbar() {
                   Farmers
                 </Link>
                 <Link
+                  href="/crops"
+                  className={`px-3 py-2 rounded-md ${
+                    pathname.startsWith('/crops') ? 'bg-green-600' : 'hover:bg-green-600'
+                  }`}
+                >
+                  Crops
+                </Link>
+                <Link
                   href="/predictions"
                   className={`px-3 py-2 rounded-md ${
                     pathname === '/predictions' ? 'bg-green-600' : 'hover:bg-green-600'
                   }`}
                 >
                   Predictions
+                </Link>
+                <Link
+                  href="/billing"
+                  className={`px-3 py-2 rounded-md ${
+                    pathname.startsWith('/billing') ? 'bg-green-600' : 'hover:bg-green-600'
+                  }`}
+                >
+                  Billing
                 </Link>
               </div>
             )}
