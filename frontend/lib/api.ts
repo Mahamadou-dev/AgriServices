@@ -152,10 +152,32 @@ export const predictionAPI = {
   getHistory: () => apiCall('/api/predict/history'),
 };
 
+// Helper function to escape XML special characters
+const escapeXml = (unsafe: string | number): string => {
+  const str = String(unsafe);
+  return str.replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '\'': return '&apos;';
+      case '"': return '&quot;';
+      default: return c;
+    }
+  });
+};
+
 // Crop API (SOAP)
+interface CropParams {
+  id?: number;
+  name?: string;
+  type?: string;
+  diseaseStatus?: string;
+}
+
 export const cropAPI = {
   // SOAP service wrapper - sends XML requests
-  callSOAP: async (operation: string, params: any) => {
+  callSOAP: async (operation: string, params: CropParams) => {
     let soapBody = '';
     
     switch (operation) {
@@ -163,25 +185,25 @@ export const cropAPI = {
         soapBody = '<crop:listCrops/>';
         break;
       case 'getCrop':
-        soapBody = `<crop:getCrop><id>${params.id}</id></crop:getCrop>`;
+        soapBody = `<crop:getCrop><id>${escapeXml(params.id!)}</id></crop:getCrop>`;
         break;
       case 'createCrop':
         soapBody = `<crop:createCrop>
-          <name>${params.name}</name>
-          <type>${params.type}</type>
-          <diseaseStatus>${params.diseaseStatus}</diseaseStatus>
+          <name>${escapeXml(params.name!)}</name>
+          <type>${escapeXml(params.type!)}</type>
+          <diseaseStatus>${escapeXml(params.diseaseStatus!)}</diseaseStatus>
         </crop:createCrop>`;
         break;
       case 'updateCrop':
         soapBody = `<crop:updateCrop>
-          <id>${params.id}</id>
-          <name>${params.name}</name>
-          <type>${params.type}</type>
-          <diseaseStatus>${params.diseaseStatus}</diseaseStatus>
+          <id>${escapeXml(params.id!)}</id>
+          <name>${escapeXml(params.name!)}</name>
+          <type>${escapeXml(params.type!)}</type>
+          <diseaseStatus>${escapeXml(params.diseaseStatus!)}</diseaseStatus>
         </crop:updateCrop>`;
         break;
       case 'deleteCrop':
-        soapBody = `<crop:deleteCrop><id>${params.id}</id></crop:deleteCrop>`;
+        soapBody = `<crop:deleteCrop><id>${escapeXml(params.id!)}</id></crop:deleteCrop>`;
         break;
     }
 
@@ -260,20 +282,26 @@ export const cropAPI = {
 };
 
 // Billing API (SOAP)
+interface BillingParams {
+  invoiceId?: number;
+  farmerName?: string;
+  amount?: number;
+}
+
 export const billingAPI = {
-  callSOAP: async (operation: string, params: any) => {
+  callSOAP: async (operation: string, params: BillingParams) => {
     let soapBody = '';
     
     switch (operation) {
       case 'GetInvoiceDetailsAsync':
         soapBody = `<tem:GetInvoiceDetailsAsync>
-          <tem:invoiceId>${params.invoiceId}</tem:invoiceId>
+          <tem:invoiceId>${escapeXml(params.invoiceId!)}</tem:invoiceId>
         </tem:GetInvoiceDetailsAsync>`;
         break;
       case 'GenerateNewInvoiceAsync':
         soapBody = `<tem:GenerateNewInvoiceAsync>
-          <tem:farmerName>${params.farmerName}</tem:farmerName>
-          <tem:amount>${params.amount}</tem:amount>
+          <tem:farmerName>${escapeXml(params.farmerName!)}</tem:farmerName>
+          <tem:amount>${escapeXml(params.amount!)}</tem:amount>
         </tem:GenerateNewInvoiceAsync>`;
         break;
     }
