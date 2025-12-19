@@ -1,448 +1,573 @@
-# 📐 Conception du Système SOA Agricole
+# 📋 Conception du Système AgriServices
 
-**Date:** 16 décembre 2025  
-**Version:** 1.0  
-**Projet:** AgriServices - Architecture SOA Multi-technologies
-
----
-
-## 🎯 Vue d'Ensemble
-
-Ce document présente la conception simplifiée du système SOA agricole avec 6 microservices interconnectés via une API Gateway.
-
----
-
-## 🗄️ Architecture de Base de Données
-
-### Stratégie Multi-Base de Données
-
-Le projet utilise une approche **polyglotte** avec différentes bases de données selon les besoins:
-
-| Service | Base de Données | Justification |
-|---------|-----------------|---------------|
-| **auth-service** | PostgreSQL | Relations strictes, transactions ACID pour l'authentification |
-| **farmer-service** | MongoDB Atlas | Flexibilité des schémas, données document-oriented |
-| **crop-service** | Aucune (SOAP stateless) | Service de calcul sans persistance |
-| **prediction-service** | Aucune (calculs temps réel) | Service de prédiction stateless |
-| **billing-service** | MongoDB Atlas | Flexibilité pour les factures et items |
-| **api-gateway** | Aucune | Routage et agrégation uniquement |
-
-### Pourquoi MongoDB Atlas?
-
-✅ **Avantages pour ce projet:**
-- Déploiement cloud gratuit (Free Tier)
-- Pas de gestion d'infrastructure
-- Haute disponibilité automatique
-- Backups automatiques
-- Interface web intuitive
-- Connexion sécurisée par défaut
+## Table des Matières
+- [Architecture Générale](#architecture-générale)
+- [Services](#services)
+- [Technologies](#technologies)
+- [Base de Données](#base-de-données)
+- [Communication](#communication)
+- [Sécurité](#sécurité)
+- [Gestion des Rôles (RBAC)](#-gestion-des-rôles-rbac)
+- [Endpoints](#endpoints)
 
 ---
 
-## 📊 Diagramme de Classes Simplifié
+## Architecture Générale
 
-### 1. Auth-Service (PostgreSQL)
-
-```
-┌─────────────────────────┐
-│       User              │
-├─────────────────────────┤
-│ - id: Long              │
-│ - username: String      │
-│ - email: String         │
-│ - password: String      │
-│ - role: String          │
-│ - createdAt: DateTime   │
-├─────────────────────────┤
-│ + login()               │
-│ + register()            │
-│ + generateToken()       │
-└─────────────────────────┘
-```
-
-### 2. Farmer-Service (MongoDB)
+Le système AgriServices suit une **architecture microservices** avec les composants suivants :
 
 ```
-┌─────────────────────────┐
-│       Farmer            │
-├─────────────────────────┤
-│ - _id: ObjectId         │
-│ - userId: String        │
-│ - firstName: String     │
-│ - lastName: String      │
-│ - phone: String         │
-│ - address: Object       │
-│   - street: String      │
-│   - city: String        │
-│   - region: String      │
-│ - farms: Array          │
-│   - name: String        │
-│   - size: Number        │
-│   - location: Object    │
-│ - createdAt: Date       │
-│ - updatedAt: Date       │
-├─────────────────────────┤
-│ + create()              │
-│ + update()              │
-│ + findById()            │
-│ + listAll()             │
-└─────────────────────────┘
-```
-
-### 3. Crop-Service (SOAP - Stateless)
-
-```
-┌─────────────────────────┐
-│       Crop              │
-├─────────────────────────┤
-│ - id: String            │
-│ - name: String          │
-│ - type: String          │
-│ - season: String        │
-│ - yieldPerHectare: int  │
-├─────────────────────────┤
-│ + getCropInfo()         │
-│ + calculateYield()      │
-│ + listCrops()           │
-└─────────────────────────┘
-```
-
-### 4. Billing-Service (MongoDB)
-
-```
-┌─────────────────────────┐
-│       Invoice           │
-├─────────────────────────┤
-│ - _id: ObjectId         │
-│ - invoiceNumber: String │
-│ - farmerId: String      │
-│ - items: Array          │
-│   - name: String        │
-│   - quantity: Number    │
-│   - unitPrice: Number   │
-│   - total: Number       │
-│ - totalAmount: Number   │
-│ - status: String        │
-│ - createdAt: Date       │
-│ - paidAt: Date          │
-├─────────────────────────┤
-│ + create()              │
-│ + calculate()           │
-│ + getByFarmer()         │
-└─────────────────────────┘
-```
-
-### 5. Prediction-Service (Stateless)
-
-```
-┌─────────────────────────┐
-│     Prediction          │
-├─────────────────────────┤
-│ - cropType: String      │
-│ - weather: Object       │
-│ - soil: Object          │
-│ - result: Object        │
-├─────────────────────────┤
-│ + predictYield()        │
-│ + predictRisk()         │
-│ + getRecommendations()  │
-└─────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                          FRONTEND                               │
+│                    Next.js (TypeScript)                         │
+│                    Port: 3000                                   │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           │ HTTP/REST
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                       API GATEWAY                               │
+│                    Spring Cloud Gateway                         │
+│                    Port: 8080                                   │
+└───────┬──────────────┬──────────────┬──────────────┬───────────┘
+        │              │              │              │
+        │ HTTP         │ HTTP         │ SOAP         │ HTTP
+        ▼              ▼              ▼              ▼
+┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+│ AUTH SERVICE │ │FARMER SERVICE│ │ CROP SERVICE │ │PREDICT SERVICE│
+│ Spring Boot  │ │  Node.js     │ │  Python      │ │  Flask       │
+│ Port: 8081   │ │  Port: 8082  │ │  Port: 8083  │ │  Port: 8084  │
+│              │ │              │ │              │ │              │
+│  PostgreSQL  │ │  PostgreSQL  │ │  PostgreSQL  │ │  PostgreSQL  │
+│  Port: 5432  │ │  Port: 5433  │ │  Port: 5434  │ │  Port: 5435  │
+└──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘
 ```
 
 ---
 
-## 🔄 Diagramme de Cas d'Utilisation
+## Services
 
-### Acteurs
-- 👨‍🌾 **Agriculteur (Farmer)** : Utilisateur principal
-- 👨‍💼 **Expert Agricole** : Consultant/Conseiller
-- 🤖 **Système** : Processus automatisés
+### 1. **Auth Service** (Spring Boot - Java)
+- **Port**: 8081
+- **Base de données**: PostgreSQL (port 5432)
+- **Responsabilités**:
+  - Authentification des utilisateurs
+  - Génération et validation des tokens JWT
+  - Gestion des comptes utilisateurs
+  - Gestion des rôles (RBAC)
 
-### Cas d'Utilisation Principaux
+### 2. **Farmer Service** (Node.js - Express)
+- **Port**: 8082
+- **Base de données**: PostgreSQL (port 5433)
+- **Responsabilités**:
+  - Gestion des fermes
+  - Gestion des factures
+  - CRUD des agriculteurs
+
+### 3. **Crop Service** (Python - Flask/SOAP)
+- **Port**: 8083
+- **Base de données**: PostgreSQL (port 5434)
+- **Responsabilités**:
+  - Gestion des cultures via SOAP
+  - Suivi des cultures par ferme
+
+### 4. **Predict Service** (Python - Flask)
+- **Port**: 8084
+- **Base de données**: PostgreSQL (port 5435)
+- **Responsabilités**:
+  - Prédictions agricoles
+  - Analyse des données
+
+### 5. **API Gateway** (Spring Cloud Gateway)
+- **Port**: 8080
+- **Responsabilités**:
+  - Routage des requêtes
+  - Validation JWT
+  - CORS
+
+### 6. **Frontend** (Next.js - TypeScript)
+- **Port**: 3000
+- **Responsabilités**:
+  - Interface utilisateur
+  - Gestion des états
+  - Affichage conditionnel basé sur les rôles
+
+---
+
+## Technologies
+
+| Service | Framework | Langage | Base de Données |
+|---------|-----------|---------|-----------------|
+| Auth Service | Spring Boot | Java | PostgreSQL |
+| Farmer Service | Express | Node.js/TypeScript | PostgreSQL |
+| Crop Service | Flask + Spyne | Python | PostgreSQL |
+| Predict Service | Flask | Python | PostgreSQL |
+| API Gateway | Spring Cloud Gateway | Java | - |
+| Frontend | Next.js | TypeScript | - |
+
+---
+
+## Base de Données
+
+Chaque service a sa **propre base de données PostgreSQL** (principe de séparation des microservices).
+
+### Auth Service DB (port 5432)
+```sql
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Farmer Service DB (port 5433)
+```sql
+CREATE TABLE farmers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    region VARCHAR(255),
+    phone VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE farms (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    location VARCHAR(255),
+    size DECIMAL(10, 2),
+    farmer_id INTEGER REFERENCES farmers(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE invoices (
+    id SERIAL PRIMARY KEY,
+    farmer_id INTEGER REFERENCES farmers(id),
+    amount DECIMAL(10, 2),
+    status VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Crop Service DB (port 5434)
+```sql
+CREATE TABLE crops (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(255),
+    planting_date DATE,
+    harvest_date DATE,
+    farm_id INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Predict Service DB (port 5435)
+```sql
+CREATE TABLE predictions (
+    id SERIAL PRIMARY KEY,
+    crop_type VARCHAR(255),
+    region VARCHAR(255),
+    predicted_yield DECIMAL(10, 2),
+    confidence_score DECIMAL(5, 2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+---
+
+## Communication
+
+### REST (HTTP/JSON)
+- **Auth Service** ↔ API Gateway
+- **Farmer Service** ↔ API Gateway
+- **Predict Service** ↔ API Gateway
+
+### SOAP (XML)
+- **Crop Service** ↔ API Gateway
+
+### Flux de Communication
+```
+Frontend → API Gateway → [Auth/Farmer/Crop/Predict] Service → PostgreSQL
+```
+
+---
+
+## Sécurité
+
+### JWT (JSON Web Token)
+- Généré par **Auth Service**
+- Validé par **API Gateway**
+- Inclut le rôle de l'utilisateur
+- Durée de vie: 1 heure
+
+### Flux d'Authentification
+```
+1. User → Frontend : Saisit login/password
+2. Frontend → Auth Service : POST /auth/login
+3. Auth Service → PostgreSQL : Vérifie credentials
+4. Auth Service → Frontend : Retourne JWT token
+5. Frontend → API Gateway : Requête avec Authorization: Bearer {token}
+6. API Gateway : Valide JWT
+7. API Gateway → Service : Transmet requête
+8. Service → API Gateway → Frontend : Retourne réponse
+```
+
+---
+
+## 👥 Gestion des Rôles (RBAC)
+
+### Vue d'Ensemble
+
+Le système AgriServices implémente un modèle **RBAC (Role-Based Access Control)** avec 4 rôles distincts gérés par le **Auth Service**. Tous les utilisateurs (Farmers, Experts, Admins, Coopératives) sont stockés dans la même table PostgreSQL avec leur rôle respectif.
+
+### Rôles Disponibles
+
+| Rôle | Description | Utilisateurs Typiques | Objectif Principal |
+|------|-------------|----------------------|-------------------|
+| **FARMER** | Agriculteur | Exploitants agricoles | Gérer ses propres fermes, cultures et factures |
+| **EXPERT** | Expert agricole | Agronomes, Conseillers | Consulter données et créer des prédictions |
+| **COOPERATIVE** | Coopérative | Gestionnaires de groupe | Gérer un groupe d'agriculteurs |
+| **ADMIN** | Administrateur | Équipe technique | Gérer le système et tous les utilisateurs |
+
+### Matrice de Permissions
+
+| Capacité | FARMER | EXPERT | COOPERATIVE | ADMIN |
+|----------|--------|--------|-------------|-------|
+| **S'authentifier** | ✅ | ✅ | ✅ | ✅ |
+| **Gérer son propre profil** | ✅ | ✅ | ✅ | ✅ |
+| **Voir ses propres données** | ✅ | ✅ | ✅ | ✅ |
+| **Voir toutes les données agriculteurs** | ❌ | ✅ | ✅ (groupe) | ✅ |
+| **Créer des prédictions** | ❌ | ✅ | ✅ | ✅ |
+| **Gérer les cultures (SOAP)** | ✅ | ✅ | ✅ | ✅ |
+| **Créer des factures** | ✅ | ❌ | ✅ | ✅ |
+| **Modifier d'autres utilisateurs** | ❌ | ❌ | ❌ | ✅ |
+| **Gérer la configuration système** | ❌ | ❌ | ❌ | ✅ |
+| **Accéder aux logs système** | ❌ | ❌ | ❌ | ✅ |
+
+### Flux de Validation des Rôles
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Système AgriServices                      │
-├─────────────────────────────────────────────────────────────┤
-│                                                               │
-│  [Agriculteur]                                                │
-│       │                                                       │
-│       ├──> (S'authentifier)                                  │
-│       │         │                                             │
-│       │         └──> (Générer JWT)                           │
-│       │                                                       │
-│       ├──> (Gérer son profil)                                │
-│       │         │                                             │
-│       │         ├──> (Créer profil)                          │
-│       │         ├──> (Modifier informations)                 │
-│       │         └──> (Ajouter fermes)                        │
-│       │                                                       │
-│       ├──> (Consulter informations cultures)                 │
-│       │         │                                             │
-│       │         ├──> (Lister cultures disponibles)           │
-│       │         └──> (Calculer rendement)                    │
-│       │                                                       │
-│       ├──> (Obtenir prédictions)                             │
-│       │         │                                             │
-│       │         ├──> (Prédire rendement)                     │
-│       │         └──> (Évaluer risques)                       │
-│       │                                                       │
-│       └──> (Gérer factures)                                  │
-│               │                                               │
-│               ├──> (Créer facture)                           │
-│               ├──> (Consulter factures)                      │
-│               └──> (Marquer comme payée)                     │
-│                                                               │
-│  [Expert Agricole]                                            │
-│       │                                                       │
-│       ├──> (S'authentifier)                                  │
-│       ├──> (Consulter données agriculteurs)                  │
-│       └──> (Fournir recommandations)                         │
-│                                                               │
+│                    1. INSCRIPTION                           │
+│  User → Frontend : Choisit son rôle                         │
+│  Frontend → Auth-Service : POST /auth/register              │
+│  {                                                           │
+│    "username": "john_doe",                                   │
+│    "email": "john@example.com",                             │
+│    "password": "SecurePass123!",                            │
+│    "role": "EXPERT"  ← Rôle sélectionné                     │
+│  }                                                           │
+│  Auth-Service → PostgreSQL : INSERT INTO users(...)         │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    2. CONNEXION                             │
+│  User → Auth-Service : POST /auth/login                     │
+│  Auth-Service → PostgreSQL : SELECT * FROM users WHERE...   │
+│  Auth-Service : Génère JWT avec rôle encodé                 │
+│  JWT Payload = {                                            │
+│    "sub": "john_doe",                                       │
+│    "username": "john_doe",                                  │
+│    "role": "EXPERT",  ← Rôle dans le token                  │
+│    "iat": 1702800000,                                       │
+│    "exp": 1702803600                                        │
+│  }                                                           │
+│  Auth-Service → User : Retourne JWT token                   │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                3. UTILISATION DU TOKEN                      │
+│  User → API Gateway : GET /api/farmers                      │
+│  Header: Authorization: Bearer eyJhbGc...                   │
+│                                                              │
+│  API Gateway : Décode JWT et extrait le rôle               │
+│  API Gateway → Farmer-Service : Transmet requête + token   │
+│                                                              │
+│  Farmer-Service : Vérifie JWT et vérifie le rôle           │
+│  if (decoded.role === 'EXPERT' || decoded.role === 'ADMIN') │
+│    → Autorise l'accès à toutes les données                 │
+│  else if (decoded.role === 'FARMER')                        │
+│    → Autorise uniquement ses propres données               │
+│  else                                                        │
+│    → Refuse l'accès (403 Forbidden)                        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
----
+### Structure JWT avec Rôle
 
-## 🏗️ Architecture Technique
-
-```
-┌──────────────────────────────────────────────────────────┐
-│                    Client (Web/Mobile)                    │
-└────────────────────┬─────────────────────────────────────┘
-                     │
-                     │ HTTP/REST
-                     ▼
-┌──────────────────────────────────────────────────────────┐
-│              API Gateway (Spring Cloud)                   │
-│              Port: 8080                                   │
-│              - Routage                                    │
-│              - Load Balancing                             │
-│              - JWT Validation                             │
-└──────┬──────┬──────┬──────┬──────┬────────────────────────┘
-       │      │      │      │      │
-       │      │      │      │      │
-       ▼      ▼      ▼      ▼      ▼
-┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
-│  Auth    │ │  Farmer  │ │   Crop   │ │Prediction│ │ Billing  │
-│ Service  │ │ Service  │ │ Service  │ │ Service  │ │ Service  │
-│          │ │          │ │          │ │          │ │          │
-│ Spring   │ │ Node.js  │ │   JAX-WS │ │  FastAPI │ │  .NET    │
-│ Boot     │ │ Express  │ │   SOAP   │ │  Python  │ │  SOAP    │
-│:8081     │ │:3001     │ │:8082     │ │:8000     │ │:8085     │
-└────┬─────┘ └────┬─────┘ └──────────┘ └──────────┘ └────┬─────┘
-     │            │                                        │
-     │            │                                        │
-     ▼            ▼                                        ▼
-┌─────────┐ ┌─────────────┐                        ┌─────────────┐
-│PostgreSQL│ │MongoDB Atlas│                        │MongoDB Atlas│
-│  Auth DB │ │  Farmer DB  │                        │ Billing DB  │
-└──────────┘ └─────────────┘                        └─────────────┘
-```
-
----
-
-## 📋 Collections MongoDB Atlas
-
-### Database: `farmerdb`
-
-#### Collection: `farmers`
-```javascript
+**Token JWT décodé:**
+```json
 {
-  _id: ObjectId("..."),
-  userId: "auth-user-id-123",
-  firstName: "Jean",
-  lastName: "Dupont",
-  phone: "+221771234567",
-  address: {
-    street: "Avenue Cheikh Anta Diop",
-    city: "Dakar",
-    region: "Dakar",
-    country: "Sénégal"
-  },
-  farms: [
-    {
-      name: "Ferme de Thiès",
-      size: 50.5,
-      unit: "hectares",
-      location: {
-        latitude: 14.7886,
-        longitude: -16.9402
-      },
-      crops: ["mil", "arachide", "maïs"]
-    }
-  ],
-  createdAt: ISODate("2025-12-16T10:00:00Z"),
-  updatedAt: ISODate("2025-12-16T10:00:00Z")
+  "sub": "user123",
+  "username": "farmer_john",
+  "role": "FARMER",
+  "iat": 1702800000,
+  "exp": 1702803600
 }
 ```
 
-### Database: `billingdb`
+**Token JWT encodé:**
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJzdWIiOiJ1c2VyMTIzIiwidXNlcm5hbWUiOiJmYXJtZXJfam9obiIsInJvbGUiOiJGQVJNRVIiLCJpYXQiOjE3MDI4MDAwMDAsImV4cCI6MTcwMjgwMzYwMH0.
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+```
 
-#### Collection: `invoices`
-```javascript
-{
-  _id: ObjectId("..."),
-  invoiceNumber: "INV-2025-001",
-  farmerId: ObjectId("..."),
-  items: [
-    {
-      name: "Engrais NPK",
-      quantity: 10,
-      unit: "sacs",
-      unitPrice: 15000,
-      total: 150000
-    },
-    {
-      name: "Semences de mil",
-      quantity: 5,
-      unit: "kg",
-      unitPrice: 2000,
-      total: 10000
-    }
-  ],
-  totalAmount: 160000,
-  currency: "XOF",
-  status: "pending", // pending, paid, cancelled
-  createdAt: ISODate("2025-12-16T10:00:00Z"),
-  paidAt: null,
-  notes: "Livraison prévue le 20 décembre"
+### Intégration Frontend
+
+Le frontend Next.js gère les rôles de manière complète:
+
+**1. Page d'inscription (`/register`):**
+```tsx
+<select name="role">
+  <option value="FARMER">Agriculteur</option>
+  <option value="EXPERT">Expert</option>
+  <option value="COOPERATIVE">Coopérative</option>
+  <option value="ADMIN">Administrateur</option>
+</select>
+```
+
+**2. Stockage après login:**
+```typescript
+// frontend/lib/api.ts
+const response = await authAPI.login(credentials);
+localStorage.setItem('authToken', response.token);
+localStorage.setItem('user', JSON.stringify({
+  username: response.username,
+  role: response.role  // ← Stocké localement
+}));
+```
+
+**3. Affichage conditionnel:**
+```tsx
+const user = getUser();
+
+{user?.role === 'ADMIN' && (
+  <Link href="/admin">Panneau Admin</Link>
+)}
+
+{user?.role === 'EXPERT' && (
+  <Link href="/predictions">Créer Prédictions</Link>
+)}
+
+{user?.role === 'FARMER' && (
+  <Link href="/my-farms">Mes Fermes</Link>
+)}
+```
+
+### Implémentation Backend
+
+**Auth Service (Spring Boot):**
+```java
+// Model User
+@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(unique = true, nullable = false)
+    private String username;
+    
+    @Column(unique = true, nullable = false)
+    private String email;
+    
+    @Column(nullable = false)
+    private String password;
+    
+    @Column(nullable = false)
+    private String role; // FARMER, EXPERT, COOPERATIVE, ADMIN
+}
+
+// Service
+public AuthResponse login(LoginRequest request) {
+    User user = userRepository.findByUsername(request.getUsername());
+    // ... vérification password ...
+    
+    String token = jwtService.generateToken(
+        user.getUsername(), 
+        user.getRole()  // ← Rôle encodé dans JWT
+    );
+    
+    return new AuthResponse(token, expirationTime, user.getUsername(), user.getRole());
 }
 ```
 
+**Farmer Service (Node.js):**
+```javascript
+// Middleware d'authentification
+const authMiddleware = (req, res, next) => {
+    const token = req.headers.authorization?.substring(7);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    
+    req.user = decoded; // { username, role }
+    next();
+};
+
+// Middleware de vérification de rôle
+const requireRole = (...allowedRoles) => {
+    return (req, res, next) => {
+        if (!allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+        next();
+    };
+};
+
+// Route protégée
+router.get('/api/farmers', 
+    authMiddleware, 
+    requireRole('EXPERT', 'ADMIN', 'COOPERATIVE'),
+    getAllFarmers
+);
+```
+
+### Contrôle du Nombre d'Administrateurs
+
+**⚠️ Problématique:**  
+Dans la version MVP actuelle, tout utilisateur peut s'inscrire comme ADMIN, ce qui n'est pas souhaitable en production.
+
+**✅ Solutions Recommandées:**
+
+#### Solution 1: Validation Manuelle (Simple)
+```java
+public User register(RegisterRequest request) {
+    if ("ADMIN".equals(request.getRole())) {
+        throw new RuntimeException("Les inscriptions ADMIN sont désactivées. Contactez un administrateur.");
+    }
+    // ... reste du code
+}
+```
+
+#### Solution 2: Code d'Invitation (Recommandé)
+```java
+public User register(RegisterRequest request) {
+    if ("ADMIN".equals(request.getRole())) {
+        // Vérifier le code d'invitation
+        if (!isValidAdminInviteCode(request.getAdminCode())) {
+            throw new RuntimeException("Code d'invitation admin invalide");
+        }
+        
+        // Limiter le nombre d'admins
+        long adminCount = userRepository.countByRole("ADMIN");
+        if (adminCount >= MAX_ADMINS) { // MAX_ADMINS = 5
+            throw new RuntimeException("Nombre maximum d'administrateurs atteint");
+        }
+    }
+    // ... reste du code
+}
+```
+
+**Frontend associé:**
+```tsx
+{formData.role === 'ADMIN' && (
+  <div>
+    <label>Code d'invitation Admin</label>
+    <input 
+      type="text" 
+      name="adminCode"
+      placeholder="Code à 6 chiffres"
+      required
+    />
+  </div>
+)}
+```
+
+#### Solution 3: Workflow d'Approbation (Production)
+```
+1. User s'inscrit avec rôle ADMIN
+   → Crée un enregistrement avec status = 'PENDING'
+   
+2. Admin existant reçoit une notification
+   → Email: "Nouvelle demande d'accès admin"
+   
+3. Admin approuve ou rejette
+   → Si approuvé: status = 'APPROVED', rôle activé
+   → Si rejeté: compte supprimé
+   
+4. Candidat reçoit email de confirmation
+```
+
+### Justification Architecturale
+
+**Pourquoi 4 rôles distincts?**
+
+1. **Séparation des Responsabilités**  
+   Chaque type d'utilisateur a des besoins et permissions différents
+
+2. **Scalabilité**  
+   Le système peut avoir des milliers de FARMERS, des centaines d'EXPERTS, sans impact sur les performances
+
+3. **Sécurité**  
+   Un EXPERT compromis ne peut pas modifier la configuration système
+
+4. **Traçabilité**  
+   Les logs peuvent identifier précisément qui a fait quelle action
+
+5. **Extensibilité**  
+   Facile d'ajouter de nouveaux rôles (ex: SUPPLIER, TRANSPORTER)
+
+**Pourquoi Auth Service centralise les rôles?**
+
+✅ **Single Source of Truth** - Un seul endroit gère l'authentification  
+✅ **Cohérence** - Tous les services utilisent la même définition de rôle  
+✅ **Performance** - Le rôle est encodé dans JWT, pas besoin de requêtes supplémentaires  
+✅ **Sécurité** - Token signé cryptographiquement, non modifiable
+
+### Recommandations de Production
+
+1. **Limiter les admins** à 3-5 maximum avec code d'invitation
+2. **Auditer les actions** des ADMIN dans des logs séparés
+3. **Implémenter 2FA** (authentification à 2 facteurs) pour ADMIN
+4. **Ajouter permissions granulaires** (ex: EXPERT_READ_ONLY vs EXPERT_FULL)
+5. **Session timeout** plus court pour ADMIN (15 min vs 1h)
+6. **Notification email** à chaque connexion ADMIN
+7. **Changelog** des modifications de rôles (qui a promu qui)
+
 ---
 
-## 🔐 Sécurité
+## Endpoints
 
-### Flux d'Authentification
+### Auth Service (8081)
+- `POST /auth/register` - Inscription
+- `POST /auth/login` - Connexion
+- `GET /auth/validate` - Validation JWT
 
-```
-1. Client → Auth-Service : POST /auth/login
-   {
-     "username": "farmer1",
-     "password": "password123"
-   }
+### Farmer Service (8082)
+- `GET /api/farmers` - Liste des agriculteurs
+- `POST /api/farmers` - Créer un agriculteur
+- `GET /api/farmers/{id}` - Détails d'un agriculteur
+- `PUT /api/farmers/{id}` - Modifier un agriculteur
+- `DELETE /api/farmers/{id}` - Supprimer un agriculteur
 
-2. Auth-Service → PostgreSQL : Vérification identifiants
+### Crop Service (8083)
+- `POST /soap` - Endpoint SOAP pour gérer les cultures
 
-3. Auth-Service → Client : JWT Token
-   {
-     "token": "eyJhbGc...",
-     "expiresIn": 3600
-   }
-
-4. Client → API Gateway : GET /api/farmers/me
-   Header: Authorization: Bearer eyJhbGc...
-
-5. API Gateway : Valide JWT
-
-6. API Gateway → Farmer-Service : Transmet requête
-
-7. Farmer-Service → MongoDB : Récupère données
-
-8. Farmer-Service → Client : Données agriculteur
-```
+### Predict Service (8084)
+- `POST /api/predictions` - Créer une prédiction
+- `GET /api/predictions` - Liste des prédictions
 
 ---
 
-## 📡 Endpoints Principaux
+## Déploiement
 
-### Auth-Service (Port 8081)
-```
-POST   /auth/register     - Créer un compte
-POST   /auth/login        - Se connecter
-GET    /auth/validate     - Valider un token
-GET    /health            - Health check
+### Développement
+```bash
+docker-compose up -d
 ```
 
-### Farmer-Service (Port 3001)
-```
-POST   /api/farmers       - Créer un agriculteur
-GET    /api/farmers/:id   - Obtenir un agriculteur
-PUT    /api/farmers/:id   - Modifier un agriculteur
-DELETE /api/farmers/:id   - Supprimer un agriculteur
-GET    /api/farmers       - Lister tous les agriculteurs
-GET    /health            - Health check
-```
-
-### Crop-Service (Port 8082 - SOAP)
-```
-SOAP   getCropInfo        - Informations sur une culture
-SOAP   calculateYield     - Calculer rendement
-SOAP   listCrops          - Lister les cultures
-```
-
-### Prediction-Service (Port 8000)
-```
-POST   /api/predict/yield - Prédire rendement
-POST   /api/predict/risk  - Évaluer risques
-GET    /health            - Health check
-```
-
-### Billing-Service (Port 8085 - SOAP)
-```
-SOAP   createInvoice      - Créer une facture
-SOAP   getInvoice         - Obtenir une facture
-SOAP   listInvoices       - Lister les factures
-SOAP   markAsPaid         - Marquer comme payée
-```
-
-### API Gateway (Port 8080)
-```
-/*                         - Route vers les services
-/health                    - Health check global
-```
+### Production
+- Utiliser Kubernetes pour orchestrer les microservices
+- Mettre en place un Load Balancer devant l'API Gateway
+- Utiliser des secrets pour les credentials de base de données
 
 ---
 
-## 🎨 Principes de Conception
-
-### 1. Microservices
-- Chaque service est **autonome** et **indépendant**
-- Peut être développé, testé et déployé séparément
-- Utilise sa propre base de données (Database per Service)
-
-### 2. API Gateway Pattern
-- Point d'entrée unique pour les clients
-- Gère le routage vers les services
-- Valide les JWT
-- Agrège les réponses si nécessaire
-
-### 3. Polyglot Persistence
-- PostgreSQL pour auth-service (relations, ACID)
-- MongoDB pour farmer/billing (flexibilité, documents)
-- Services stateless pour crop/prediction (calculs)
-
-### 4. Communication
-- **REST** : Auth, Farmer, Prediction (JSON)
-- **SOAP** : Crop, Billing (XML, WSDL)
-- **Synchrone** : Toutes les communications
-
----
-
-## 📝 Notes de Conception
-
-### Évolutions Futures
-1. **Messaging** : Ajouter RabbitMQ/Kafka pour communications asynchrones
-2. **Caching** : Redis pour améliorer performances
-3. **Service Discovery** : Eureka pour découverte automatique
-4. **Monitoring** : Prometheus + Grafana
-5. **Tracing** : Jaeger pour traçabilité distribuée
-
-### Limitations Actuelles
-- Pas de gestion d'événements asynchrones
-- Pas de saga pattern pour transactions distribuées
-- Pas de circuit breaker (résilience)
-- Pas de rate limiting
-
----
-
-**Document créé le:** 16 décembre 2025  
-**Pour questions:** Consulter README.md ou ouvrir une issue GitHub
----
-
-**📅 Dernière mise à jour** : `05/16/2025`  
-**👤 Auteur** : `MAHAMADOU AMADOU HABOU`  
-**🏷️ Version** : `1.1`
-
----
+## Contact
+Pour toute question, contactez l'équipe de développement AgriServices.
