@@ -1,10 +1,10 @@
 package com.gremahtech.authservice.controller;
 
-import com.gremahtech.authservice.dto.AuthResponse;
-import com.gremahtech.authservice.dto.LoginRequest;
-import com.gremahtech.authservice.dto.RegisterRequest;
-import com.gremahtech.authservice.model.User;
-import com.gremahtech.authservice.service.AuthService;
+import com.greamahtech.authservice.dto.AuthResponse;
+import com.greamahtech.authservice.dto.LoginRequest;
+import com.greamahtech.authservice.dto.RegisterRequest;
+import com.greamahtech.authservice.model.User;
+import com.greamahtech.authservice.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
     @Autowired
@@ -72,5 +71,26 @@ public class AuthController {
         response.put("status", "ok");
         response.put("service", "auth-service");
         return ResponseEntity.ok(response);
+    }
+
+    // ADMIN: Get all users
+    @GetMapping("/users")
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            return ResponseEntity.ok(authService.getAllUsers());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    // ADMIN: Delete user by id
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        try {
+            authService.deleteUser(id);
+            return ResponseEntity.ok().body("Utilisateur supprimé");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur: " + e.getMessage());
+        }
     }
 }

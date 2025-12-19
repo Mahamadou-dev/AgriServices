@@ -93,81 +93,91 @@ export default function CropsPage() {
   };
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-14 animate-fade-in bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <span className="text-4xl">🌱</span>
-              Gestion des Cultures
-            </h1>
-            <p className="mt-2 text-gray-600">Service SOAP - Gérez vos cultures agricoles</p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8 mb-14">
+          <div className="flex items-center gap-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center text-white text-4xl shadow-lg">
+              🌱
+            </div>
+            <div>
+              <h1 className="text-4xl font-extrabold text-emerald-900">Gestion des Cultures</h1>
+              <p className="text-gray-500 mt-2 text-lg">Service SOAP - Gérez vos cultures agricoles</p>
+            </div>
           </div>
-          <Button onClick={() => setShowForm(!showForm)} size="lg">
+          <Button onClick={() => setShowForm(!showForm)} size="lg" className="text-lg px-8 py-3">
             {showForm ? '✕ Annuler' : '+ Ajouter une culture'}
           </Button>
         </div>
 
         {/* Form */}
         {showForm && (
-          <Card className="mb-8 animate-fade-in border-l-4 border-l-emerald-500">
-            <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-              <span>🌿</span> Nouvelle Culture
-            </h2>
-            <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nom de la culture *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                  placeholder="Ex: Winter Wheat, Sweet Corn..."
-                />
+          <Card className="mb-14 animate-fade-in">
+            <div className="flex items-center gap-5 mb-8">
+              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center text-white text-3xl shadow-sm">
+                🌿
+              </div>
+              <h2 className="text-2xl font-extrabold text-emerald-900">Nouvelle Culture</h2>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <label className="block text-base font-semibold text-gray-700">
+                    Nom de la culture *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-6 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white text-base"
+                    placeholder="Ex: Winter Wheat, Sweet Corn..."
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="block text-base font-semibold text-gray-700">
+                    Type de culture *
+                  </label>
+                  <select
+                    value={formData.type}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    className="w-full px-6 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white text-base"
+                  >
+                    <option value="Cereal">🌾 Céréales (Cereal)</option>
+                    <option value="Vegetable">🥬 Légumes (Vegetable)</option>
+                    <option value="Fruit">🍎 Fruits (Fruit)</option>
+                    <option value="Legume">🫘 Légumineuses (Legume)</option>
+                    <option value="Oilseed">🌻 Oléagineux (Oilseed)</option>
+                    <option value="Fiber">🧵 Fibres (Fiber)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="block text-base font-semibold text-gray-700">
+                    Statut sanitaire *
+                  </label>
+                  <select
+                    value={formData.diseaseStatus}
+                    onChange={(e) => setFormData({ ...formData, diseaseStatus: e.target.value })}
+                    className="w-full px-6 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white text-base"
+                  >
+                    <option value="Healthy">✅ Saine (Healthy)</option>
+                    <option value="At Risk">⚠️ À risque (At Risk)</option>
+                    <option value="Under Treatment">💊 En traitement (Under Treatment)</option>
+                    <option value="Moderate Risk">🟡 Risque modéré (Moderate Risk)</option>
+                    <option value="High Risk">🔴 Risque élevé (High Risk)</option>
+                    <option value="Unknown">❓ Inconnu (Unknown)</option>
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Type de culture *
-                </label>
-                <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                >
-                  <option value="Cereal">🌾 Céréales (Cereal)</option>
-                  <option value="Vegetable">🥬 Légumes (Vegetable)</option>
-                  <option value="Fruit">🍎 Fruits (Fruit)</option>
-                  <option value="Legume">🫘 Légumineuses (Legume)</option>
-                  <option value="Oilseed">🌻 Oléagineux (Oilseed)</option>
-                  <option value="Fiber">🧵 Fibres (Fiber)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Statut sanitaire *
-                </label>
-                <select
-                  value={formData.diseaseStatus}
-                  onChange={(e) => setFormData({ ...formData, diseaseStatus: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                >
-                  <option value="Healthy">✅ Saine (Healthy)</option>
-                  <option value="At Risk">⚠️ À risque (At Risk)</option>
-                  <option value="Under Treatment">💊 En traitement (Under Treatment)</option>
-                  <option value="Moderate Risk">🟡 Risque modéré (Moderate Risk)</option>
-                  <option value="High Risk">🔴 Risque élevé (High Risk)</option>
-                  <option value="Unknown">❓ Inconnu (Unknown)</option>
-                </select>
-              </div>
-
-              <div className="flex items-end">
-                <Button type="submit" loading={loading} size="lg" className="w-full">
+              <div className="flex justify-end gap-4 pt-8 border-t border-gray-100">
+                <Button type="button" variant="secondary" onClick={() => setShowForm(false)} size="lg">
+                  Annuler
+                </Button>
+                <Button type="submit" loading={loading} size="lg">
                   Créer la culture
                 </Button>
               </div>
@@ -177,20 +187,28 @@ export default function CropsPage() {
 
         {/* Content */}
         {loading && !showForm ? (
-          <div className="flex items-center justify-center py-16">
+          <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <div className="spinner mx-auto mb-4 w-10 h-10"></div>
-              <p className="text-gray-600">Chargement des cultures...</p>
+              <div className="animate-spin rounded-full border-4 border-emerald-500 border-t-transparent w-16 h-16 mx-auto mb-6"></div>
+              <p className="text-gray-600 font-semibold text-lg">Chargement des cultures...</p>
             </div>
           </div>
         ) : crops.length === 0 ? (
-          <Card className="text-center py-12">
-            <span className="text-6xl mb-4 block">🌱</span>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">Aucune culture trouvée</h3>
-            <p className="text-gray-500">Ajoutez votre première culture pour commencer !</p>
+          <Card className="text-center py-20">
+            <div className="w-24 h-24 mx-auto mb-8 bg-gray-100 rounded-full flex items-center justify-center text-6xl">
+              🌱
+            </div>
+            <h3 className="text-2xl font-extrabold text-emerald-900 mb-4">Aucune culture trouvée</h3>
+            <p className="text-gray-500 text-lg mb-8">Ajoutez votre première culture pour commencer !</p>
+            <Button onClick={() => setShowForm(true)} size="lg">
+              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Ajouter une culture
+            </Button>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {crops.map((crop, index) => (
               <Card 
                 key={crop.id} 
@@ -198,34 +216,34 @@ export default function CropsPage() {
                 className="animate-fade-in"
                 style={{ animationDelay: `${index * 0.05}s` } as React.CSSProperties}
               >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl">{getTypeIcon(crop.type)}</span>
-                    <h3 className="text-lg font-bold text-gray-900">{crop.name}</h3>
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex items-center gap-4">
+                    <span className="text-4xl">{getTypeIcon(crop.type)}</span>
+                    <h3 className="text-xl font-extrabold text-emerald-900">{crop.name}</h3>
                   </div>
                   <button
                     onClick={() => handleDelete(crop.id)}
-                    className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                    className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-xl hover:bg-red-50"
                     disabled={loading}
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
                 </div>
                 
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-500 text-sm">ID</span>
-                    <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">{crop.id}</span>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                    <span className="text-gray-500 text-base font-medium">ID</span>
+                    <span className="font-mono text-base bg-gray-100 px-3 py-1 rounded-lg">{crop.id}</span>
                   </div>
-                  <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-500 text-sm">Type</span>
-                    <span className="font-medium">{crop.type}</span>
+                  <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                    <span className="text-gray-500 text-base font-medium">Type</span>
+                    <span className="font-semibold text-lg">{crop.type}</span>
                   </div>
-                  <div className="flex items-center justify-between py-2">
-                    <span className="text-gray-500 text-sm">Statut</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(crop.diseaseStatus)}`}>
+                  <div className="flex items-center justify-between py-3">
+                    <span className="text-gray-500 text-base font-medium">Statut</span>
+                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(crop.diseaseStatus)}`}>
                       {crop.diseaseStatus}
                     </span>
                   </div>

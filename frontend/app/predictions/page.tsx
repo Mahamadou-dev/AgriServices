@@ -61,52 +61,52 @@ export default function PredictionsPage() {
   ];
 
   return (
-    <div className="min-h-screen py-8 animate-fade-in">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-14 animate-fade-in bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">
+        <div className="mb-14">
+          <div className="flex items-center gap-6 mb-3">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center text-white text-4xl shadow-lg">
               📊
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Prédictions Agricoles</h1>
-              <p className="text-gray-500">Estimez vos rendements et évaluez les risques</p>
+              <h1 className="text-4xl font-extrabold text-emerald-900">Prédictions Agricoles</h1>
+              <p className="text-gray-500 mt-2 text-lg">Estimez vos rendements et évaluez les risques</p>
             </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 inline-flex gap-2 mb-8">
+        <div className="bg-white p-3 rounded-3xl shadow-lg border border-emerald-100 inline-flex gap-2 mb-14">
           <button
             onClick={() => { setActiveTab('yield'); setResult(null); }}
-            className={`flex items-center gap-2 py-3 px-6 rounded-xl font-semibold transition-all ${
+            className={`flex items-center gap-3 py-4 px-8 rounded-2xl font-bold text-lg transition-all ${
               activeTab === 'yield'
                 ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            <span className="text-xl">🌾</span>
+            <span className="text-2xl">🌾</span>
             Prédiction de Rendement
           </button>
           <button
             onClick={() => { setActiveTab('risk'); setResult(null); }}
-            className={`flex items-center gap-2 py-3 px-6 rounded-xl font-semibold transition-all ${
+            className={`flex items-center gap-3 py-4 px-8 rounded-2xl font-bold text-lg transition-all ${
               activeTab === 'risk'
                 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            <span className="text-xl">⚠️</span>
+            <span className="text-2xl">⚠️</span>
             Évaluation des Risques
           </button>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-10">
           {/* Form */}
           <Card className="h-fit">
-            <div className="flex items-center gap-3 mb-6">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-xl shadow-sm ${
+            <div className="flex items-center gap-4 mb-8">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white text-2xl shadow-sm ${
                 activeTab === 'yield' 
                   ? 'bg-gradient-to-br from-emerald-500 to-teal-600' 
                   : 'bg-gradient-to-br from-amber-500 to-orange-600'
@@ -116,25 +116,25 @@ export default function PredictionsPage() {
               <h2 className="text-xl font-bold text-gray-900">Données d&apos;entrée</h2>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-8">
               {/* Crop Type */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-sm font-semibold text-gray-700">
                   Type de culture
                 </label>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-5 gap-3">
                   {crops.map((crop) => (
                     <button
                       key={crop.value}
                       type="button"
                       onClick={() => setFormData({ ...formData, crop_type: crop.value })}
-                      className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all ${
+                      className={`flex flex-col items-center p-4 rounded-xl border-2 transition-all ${
                         formData.crop_type === crop.value
                           ? 'border-emerald-500 bg-emerald-50'
                           : 'border-gray-200 hover:border-emerald-300'
                       }`}
                     >
-                      <span className="text-2xl mb-1">{crop.icon}</span>
+                      <span className="text-2xl mb-2">{crop.icon}</span>
                       <span className="text-xs font-medium text-gray-700">{crop.label}</span>
                     </button>
                   ))}
@@ -142,7 +142,7 @@ export default function PredictionsPage() {
               </div>
 
               {/* Area */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-sm font-semibold text-gray-700">
                   Surface (hectares)
                 </label>
@@ -158,23 +158,23 @@ export default function PredictionsPage() {
                     required
                     value={formData.area_hectares}
                     onChange={(e) => setFormData({ ...formData, area_hectares: parseFloat(e.target.value) })}
-                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all"
+                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all"
                   />
                 </div>
               </div>
 
               {/* Soil Type */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-sm font-semibold text-gray-700">
                   Type de sol
                 </label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-4">
                   {soils.map((soil) => (
                     <button
                       key={soil.value}
                       type="button"
                       onClick={() => setFormData({ ...formData, soil_type: soil.value })}
-                      className={`flex items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all ${
+                      className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${
                         formData.soil_type === soil.value
                           ? 'border-emerald-500 bg-emerald-50'
                           : 'border-gray-200 hover:border-emerald-300'
@@ -188,8 +188,8 @@ export default function PredictionsPage() {
               </div>
 
               {/* Rainfall & Temperature */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-5">
+                <div className="space-y-3">
                   <label className="block text-sm font-semibold text-gray-700">
                     Pluviométrie (mm)
                   </label>

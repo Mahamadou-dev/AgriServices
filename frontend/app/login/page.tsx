@@ -30,7 +30,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center px-6 sm:px-8 py-16 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50"></div>
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-emerald-200/30 to-green-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
@@ -38,26 +38,26 @@ export default function LoginPage() {
       
       <div className="w-full max-w-md relative z-10 animate-fade-in">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3 group">
-            <span className="text-4xl group-hover:animate-bounce">🌾</span>
-            <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+        <div className="text-center mb-10">
+          <Link href="/" className="inline-flex items-center gap-4 group">
+            <span className="text-5xl group-hover:animate-bounce">🌾</span>
+            <span className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               AgriServices
             </span>
           </Link>
         </div>
 
         {/* Card */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl shadow-emerald-500/10 p-8 border border-white">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl text-white text-3xl mb-4 shadow-lg">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl shadow-emerald-500/10 p-8 sm:p-10 border border-white">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center justify-center w-18 h-18 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl text-white text-4xl mb-5 shadow-lg">
               🔐
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Connexion</h1>
-            <p className="text-gray-500 mt-2">Bienvenue ! Connectez-vous à votre compte</p>
+            <p className="text-gray-500 mt-3">Bienvenue ! Connectez-vous à votre compte</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl animate-shake">
                 <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,7 +104,7 @@ export default function LoginPage() {
                   placeholder="Entrez votre mot de passe"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all placeholder:text-gray-400"
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -112,15 +112,15 @@ export default function LoginPage() {
             <Button
               type="submit"
               loading={loading}
-              className="w-full py-3.5"
+              className="w-full py-4"
               size="lg"
             >
               {loading ? 'Connexion en cours...' : 'Se connecter'}
             </Button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-gray-100">
-            <p className="text-center text-sm text-gray-600">
+          <div className="mt-10 pt-8 border-t border-gray-100">
+            <p className="text-center text-gray-600">
               Pas encore de compte ?{' '}
               <Link href="/register" className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline">
                 Créer un compte
@@ -130,7 +130,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer text */}
-        <p className="text-center text-xs text-gray-500 mt-6">
+        <p className="text-center text-sm text-gray-500 mt-8">
           © 2025 AgriServices - Plateforme SOA de Gestion Agricole
         </p>
       </div>

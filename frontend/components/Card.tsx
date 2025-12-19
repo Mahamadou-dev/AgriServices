@@ -1,21 +1,25 @@
-import { ReactNode } from 'react';
+import { ReactNode, CSSProperties } from 'react';
 
 interface CardProps {
   title?: string;
   children: ReactNode;
   className?: string;
   hover?: boolean;
+  style?: CSSProperties;
 }
 
-export default function Card({ title, children, className = '', hover = false }: CardProps) {
+export default function Card({ title, children, className = '', hover = false, style }: CardProps) {
   return (
-    <div className={`
-      bg-white rounded-xl shadow-sm border border-gray-100 p-6
-      ${hover ? 'card-hover cursor-pointer' : ''}
-      ${className}
-    `}>
+    <div 
+      className={`
+        bg-white rounded-3xl shadow-lg border border-emerald-100 p-6 sm:p-8 transition-all
+        ${hover ? 'hover:shadow-xl hover:-translate-y-1 cursor-pointer' : ''}
+        ${className}
+      `}
+      style={style}
+    >
       {title && (
-        <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+        <h2 className="text-2xl font-extrabold mb-6 text-emerald-900 flex items-center gap-3">
           {title}
         </h2>
       )}

@@ -28,7 +28,7 @@ services:
       - "3001:3001"
     environment:
       - PORT=3001
-      - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/farmerdb}
+      - MONGO_URI=${MONGODB_URI}/${MONGODB_DATABASE_FARMER}
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci10aGUtanctdC1hdXRoLXNlcnZpY2UtdG8tc2lnbi1hbmQtdmFsaWRhdGUtam9zLTM4}
     networks:
       - agri-network

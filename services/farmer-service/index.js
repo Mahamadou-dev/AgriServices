@@ -1,14 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
+// CORS is handled by API Gateway - removed to avoid duplicate headers
 const farmerRoutes = require('./routes/farmers');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+// Note: CORS is handled by API Gateway, not here
 app.use(express.json());
 
 // MongoDB Connection

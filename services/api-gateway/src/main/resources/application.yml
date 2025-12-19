@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+spring:
+  application: 
+    name: api-gateway
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration
+  cloud:
+    gateway:
+      routes:
+        # Auth Service Routes
+        - id: auth-service
+          uri: http://auth-service:8081
+          predicates:
+            - Path=/auth/**
+        
+        # Farmer Service Routes
+        - id: farmer-service
+          uri: http://farmer-service:3001
+          predicates: 
+            - Path=/api/farmers/**
+        
+        # Prediction Service Routes
+        - id: prediction-service
+          uri: http://prediction-service:8000
+          predicates:
+            - Path=/api/predict/**
+        
+        # Crop Service Routes (SOAP)
+        - id: crop-service
+          uri: http://crop-service:8082
+          predicates:
+            - Path=/crop/**
+        
+        # Billing Service Routes (SOAP)
+        - id: billing-service
+          uri: http://billing-service:8085
+          predicates:
+            - Path=/billing/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: INFO

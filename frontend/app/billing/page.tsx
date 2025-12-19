@@ -69,39 +69,43 @@ export default function BillingPage() {
   };
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-14 animate-fade-in bg-gray-50">
+      <div className="max-w-4xl mx-auto px-4 sm:px-8 lg:px-12">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <span className="text-4xl">💰</span>
-            Service de Facturation
-          </h1>
-          <p className="mt-2 text-gray-600">Service SOAP - Générez et consultez les factures</p>
+        <div className="mb-14">
+          <div className="flex items-center gap-6 mb-3">
+            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-4xl shadow-lg">
+              💰
+            </div>
+            <div>
+              <h1 className="text-4xl font-extrabold text-emerald-900">Service de Facturation</h1>
+              <p className="text-gray-500 mt-2 text-lg">Service SOAP - Générez et consultez les factures</p>
+            </div>
+          </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-8 p-1 bg-gray-100 rounded-xl">
+        <div className="bg-white p-3 rounded-3xl shadow-lg border border-emerald-100 inline-flex gap-2 mb-14">
           <button
             onClick={() => setActiveTab('generate')}
-            className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+            className={`flex items-center gap-3 py-4 px-8 rounded-2xl font-bold text-lg transition-all ${
               activeTab === 'generate'
-                ? 'bg-white text-emerald-700 shadow-md'
-                : 'text-gray-600 hover:text-gray-800'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
+                : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            <span className="mr-2">📝</span>
+            <span className="text-2xl">📝</span>
             Générer une facture
           </button>
           <button
             onClick={() => setActiveTab('details')}
-            className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+            className={`flex items-center gap-3 py-4 px-8 rounded-2xl font-bold text-lg transition-all ${
               activeTab === 'details'
-                ? 'bg-white text-emerald-700 shadow-md'
-                : 'text-gray-600 hover:text-gray-800'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
+                : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            <span className="mr-2">🔍</span>
+            <span className="text-2xl">🔍</span>
             Consulter une facture
           </button>
         </div>
@@ -109,30 +113,30 @@ export default function BillingPage() {
         {/* Generate Invoice Tab */}
         {activeTab === 'generate' && (
           <Card className="animate-fade-in border-l-4 border-l-emerald-500">
-            <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-              <span>🧾</span> Générer une nouvelle facture
+            <h2 className="text-xl font-semibold mb-8 flex items-center gap-3">
+              <span className="text-2xl">🧾</span> Générer une nouvelle facture
             </h2>
-            <form onSubmit={handleGenerateInvoice} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nom de l'agriculteur *
+            <form onSubmit={handleGenerateInvoice} className="space-y-8">
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-gray-700">
+                  Nom de l&apos;agriculteur *
                 </label>
                 <input
                   type="text"
                   required
                   value={generateForm.farmerName}
                   onChange={(e) => setGenerateForm({ ...generateForm, farmerName: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  className="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                   placeholder="Ex: John Doe, Alice Martin..."
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-gray-700">
                   Montant (€) *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">€</span>
+                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-lg font-medium">€</span>
                   <input
                     type="number"
                     step="0.01"
@@ -140,7 +144,7 @@ export default function BillingPage() {
                     required
                     value={generateForm.amount}
                     onChange={(e) => setGenerateForm({ ...generateForm, amount: e.target.value })}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    className="w-full pl-12 pr-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                     placeholder="1250.75"
                   />
                 </div>
@@ -152,8 +156,8 @@ export default function BillingPage() {
             </form>
 
             {generateResult && (
-              <div className="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl animate-fade-in">
-                <div className="flex items-center gap-2 mb-2">
+              <div className="mt-8 p-5 bg-emerald-50 border border-emerald-200 rounded-xl animate-fade-in">
+                <div className="flex items-center gap-3 mb-3">
                   <span className="text-2xl">✅</span>
                   <p className="text-emerald-800 font-semibold">Facture générée avec succès !</p>
                 </div>
@@ -166,12 +170,12 @@ export default function BillingPage() {
         {/* Get Invoice Details Tab */}
         {activeTab === 'details' && (
           <Card className="animate-fade-in border-l-4 border-l-blue-500">
-            <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-              <span>🔍</span> Consulter les détails d'une facture
+            <h2 className="text-xl font-semibold mb-8 flex items-center gap-3">
+              <span className="text-2xl">🔍</span> Consulter les détails d&apos;une facture
             </h2>
-            <form onSubmit={handleGetInvoiceDetails} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+            <form onSubmit={handleGetInvoiceDetails} className="space-y-8">
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-gray-700">
                   ID de la facture *
                 </label>
                 <input
@@ -179,11 +183,11 @@ export default function BillingPage() {
                   required
                   value={invoiceId}
                   onChange={(e) => setInvoiceId(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                   placeholder="Ex: 101, 102, 103..."
                 />
-                <p className="mt-2 text-sm text-gray-500 flex items-center gap-1">
-                  <span>💡</span> Astuce: Essayez l'ID 101 pour une facture de démonstration
+                <p className="mt-3 text-sm text-gray-500 flex items-center gap-2">
+                  <span>💡</span> Astuce: Essayez l&apos;ID 101 pour une facture de démonstration
                 </p>
               </div>
 
@@ -193,8 +197,8 @@ export default function BillingPage() {
             </form>
 
             {invoiceDetails && (
-              <div className="mt-6 p-6 bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl animate-fade-in">
-                <div className="flex items-center justify-between mb-6">
+              <div className="mt-8 p-6 sm:p-8 bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl animate-fade-in">
+                <div className="flex items-center justify-between mb-8">
                   <div>
                     <p className="text-sm text-gray-500">Facture</p>
                     <h3 className="text-2xl font-bold text-gray-900">#{invoiceDetails.id}</h3>
@@ -204,24 +208,24 @@ export default function BillingPage() {
                   </span>
                 </div>
                 
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                    <span className="text-gray-500 flex items-center gap-2">
+                <div className="space-y-5">
+                  <div className="flex justify-between items-center py-4 border-b border-gray-100">
+                    <span className="text-gray-500 flex items-center gap-3">
                       <span>👤</span> Agriculteur
                     </span>
                     <span className="font-semibold text-gray-900">{invoiceDetails.farmerName}</span>
                   </div>
-                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                    <span className="text-gray-500 flex items-center gap-2">
+                  <div className="flex justify-between items-center py-4 border-b border-gray-100">
+                    <span className="text-gray-500 flex items-center gap-3">
                       <span>💶</span> Montant
                     </span>
                     <span className="font-bold text-2xl text-emerald-600">
                       {invoiceDetails.amount.toFixed(2)} €
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-3">
-                    <span className="text-gray-500 flex items-center gap-2">
-                      <span>📅</span> Date d'émission
+                  <div className="flex justify-between items-center py-4">
+                    <span className="text-gray-500 flex items-center gap-3">
+                      <span>📅</span> Date d&apos;émission
                     </span>
                     <span className="font-medium text-gray-900">
                       {new Date(invoiceDetails.issueDate).toLocaleDateString('fr-FR', {

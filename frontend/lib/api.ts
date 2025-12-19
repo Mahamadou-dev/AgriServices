@@ -1,5 +1,5 @@
 // API Configuration and utility functions
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || 'http://localhost:8090';
 
 // Auth token management
 export const getAuthToken = (): string | null => {
@@ -65,7 +65,7 @@ export async function apiCall(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'Network error' }));
-    throw new Error(error.message || 'API Error');
+    throw new Error(error.error || error.message || 'API Error');
   }
 
   return response.json();
