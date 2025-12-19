@@ -4,12 +4,21 @@ interface CardProps {
   title?: string;
   children: ReactNode;
   className?: string;
+  hover?: boolean;
 }
 
-export default function Card({ title, children, className = '' }: CardProps) {
+export default function Card({ title, children, className = '', hover = false }: CardProps) {
   return (
-    <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
-      {title && <h2 className="text-xl font-bold mb-4 text-gray-800">{title}</h2>}
+    <div className={`
+      bg-white rounded-xl shadow-sm border border-gray-100 p-6
+      ${hover ? 'card-hover cursor-pointer' : ''}
+      ${className}
+    `}>
+      {title && (
+        <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+          {title}
+        </h2>
+      )}
       {children}
     </div>
   );

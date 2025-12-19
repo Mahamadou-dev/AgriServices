@@ -2,142 +2,182 @@ import Link from 'next/link';
 import Card from '@/components/Card';
 
 export default function Home() {
+  const features = [
+    { icon: '🔐', title: 'Authentification JWT', desc: 'Sécurisation des accès avec tokens JWT et gestion des rôles', color: 'from-blue-500 to-indigo-500' },
+    { icon: '👨‍🌾', title: 'Gestion des Agriculteurs', desc: 'CRUD complet avec MongoDB pour gérer les profils des agriculteurs', color: 'from-emerald-500 to-teal-500' },
+    { icon: '🌱', title: 'Gestion des Cultures', desc: 'Service SOAP pour la gestion des cultures et parcelles', color: 'from-green-500 to-lime-500' },
+    { icon: '📊', title: 'Prédictions Agricoles', desc: 'Estimations de rendement et évaluation des risques avec FastAPI', color: 'from-purple-500 to-pink-500' },
+    { icon: '💰', title: 'Facturation', desc: 'Service SOAP .NET pour la gestion des factures', color: 'from-amber-500 to-orange-500' },
+    { icon: '🔗', title: 'API Gateway', desc: 'Point d\'entrée unique avec routage intelligent Spring Cloud', color: 'from-cyan-500 to-blue-500' },
+  ];
+
+  const services = [
+    { icon: '🔐', name: 'Auth Service', tech: 'Spring Boot 3.4 + PostgreSQL + JWT', port: '8081' },
+    { icon: '👨‍🌾', name: 'Farmer Service', tech: 'Node.js 22 + Express + MongoDB', port: '3001' },
+    { icon: '🌱', name: 'Crop Service', tech: 'Java JAX-WS (SOAP)', port: '8082' },
+    { icon: '📊', name: 'Prediction Service', tech: 'Python FastAPI', port: '8000' },
+    { icon: '💰', name: 'Billing Service', tech: '.NET 9 CoreWCF (SOAP)', port: '8085' },
+    { icon: '🔗', name: 'API Gateway', tech: 'Spring Cloud Gateway', port: '8080' },
+  ];
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-green-600 to-green-800 text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold mb-4">🌾 AgriServices</h1>
-          <p className="text-xl mb-8">
-            Plateforme SOA de Gestion Agricole
-          </p>
-          <p className="text-lg mb-8 max-w-2xl mx-auto">
-            Système de gestion agricole distribué basé sur une architecture orientée services (SOA) 
-            avec microservices REST et SOAP.
-          </p>
-          <div className="flex gap-4 justify-center">
-            <Link
-              href="/register"
-              className="bg-white text-green-700 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition"
-            >
-              Commencer
-            </Link>
-            <Link
-              href="/login"
-              className="bg-green-700 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-600 transition border-2 border-white"
-            >
-              Se connecter
-            </Link>
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-green-700 to-teal-800 text-white">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+          <div className="text-center">
+            <div className="inline-flex items-center px-4 py-2 bg-white/10 rounded-full text-sm font-medium mb-8 backdrop-blur-sm">
+              <span className="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-pulse"></span>
+              Plateforme SOA de Gestion Agricole
+            </div>
+            
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
+              <span className="inline-block animate-bounce mr-4">🌾</span>
+              AgriServices
+            </h1>
+            
+            <p className="text-xl sm:text-2xl text-emerald-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Système de gestion agricole distribué basé sur une architecture orientée services 
+              avec microservices REST et SOAP.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/register"
+                className="group inline-flex items-center justify-center bg-white text-emerald-700 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+              >
+                <span>Commencer maintenant</span>
+                <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-bold hover:bg-white/20 transition-all border-2 border-white/30"
+              >
+                Se connecter
+              </Link>
+            </div>
           </div>
+        </div>
+        
+        {/* Wave separator */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f0fdf4"/>
+          </svg>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-          Fonctionnalités principales
-        </h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card>
-            <div className="text-4xl mb-4">🔐</div>
-            <h3 className="text-xl font-bold mb-2">Authentification JWT</h3>
-            <p className="text-gray-600">
-              Sécurisation des accès avec tokens JWT et gestion des rôles
+      <div className="py-20 sm:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Fonctionnalités principales
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Une suite complète d'outils pour gérer votre exploitation agricole
             </p>
-          </Card>
-
-          <Card>
-            <div className="text-4xl mb-4">👨‍🌾</div>
-            <h3 className="text-xl font-bold mb-2">Gestion des Agriculteurs</h3>
-            <p className="text-gray-600">
-              CRUD complet avec MongoDB pour gérer les profils des agriculteurs
-            </p>
-          </Card>
-
-          <Card>
-            <div className="text-4xl mb-4">🌱</div>
-            <h3 className="text-xl font-bold mb-2">Gestion des Cultures</h3>
-            <p className="text-gray-600">
-              Service SOAP pour la gestion des cultures et parcelles
-            </p>
-          </Card>
-
-          <Card>
-            <div className="text-4xl mb-4">📊</div>
-            <h3 className="text-xl font-bold mb-2">Prédictions Agricoles</h3>
-            <p className="text-gray-600">
-              Estimations de rendement et évaluation des risques avec FastAPI
-            </p>
-          </Card>
-
-          <Card>
-            <div className="text-4xl mb-4">💰</div>
-            <h3 className="text-xl font-bold mb-2">Facturation</h3>
-            <p className="text-gray-600">
-              Service SOAP .NET pour la gestion des factures
-            </p>
-          </Card>
-
-          <Card>
-            <div className="text-4xl mb-4">🔗</div>
-            <h3 className="text-xl font-bold mb-2">API Gateway</h3>
-            <p className="text-gray-600">
-              Point d'entrée unique avec routage intelligent Spring Cloud
-            </p>
-          </Card>
-        </div>
-      </div>
-
-      {/* Architecture Section */}
-      <div className="bg-white py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
-            Architecture Microservices
-          </h2>
-          <div className="max-w-4xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="border-2 border-green-200 rounded-lg p-4">
-                <h3 className="font-bold text-lg mb-2">🔐 Auth Service</h3>
-                <p className="text-sm text-gray-600">Spring Boot 3.4 + PostgreSQL + JWT</p>
-                <p className="text-xs text-gray-500 mt-2">Port: 8081</p>
-              </div>
-              <div className="border-2 border-green-200 rounded-lg p-4">
-                <h3 className="font-bold text-lg mb-2">👨‍🌾 Farmer Service</h3>
-                <p className="text-sm text-gray-600">Node.js 22 + Express + MongoDB</p>
-                <p className="text-xs text-gray-500 mt-2">Port: 3001</p>
-              </div>
-              <div className="border-2 border-green-200 rounded-lg p-4">
-                <h3 className="font-bold text-lg mb-2">🌱 Crop Service</h3>
-                <p className="text-sm text-gray-600">Java JAX-WS (SOAP)</p>
-                <p className="text-xs text-gray-500 mt-2">Port: 8082</p>
-              </div>
-              <div className="border-2 border-green-200 rounded-lg p-4">
-                <h3 className="font-bold text-lg mb-2">📊 Prediction Service</h3>
-                <p className="text-sm text-gray-600">Python FastAPI</p>
-                <p className="text-xs text-gray-500 mt-2">Port: 8000</p>
-              </div>
-              <div className="border-2 border-green-200 rounded-lg p-4">
-                <h3 className="font-bold text-lg mb-2">💰 Billing Service</h3>
-                <p className="text-sm text-gray-600">.NET 9 (SOAP)</p>
-                <p className="text-xs text-gray-500 mt-2">Port: 8085</p>
-              </div>
-              <div className="border-2 border-green-200 rounded-lg p-4">
-                <h3 className="font-bold text-lg mb-2">🔗 API Gateway</h3>
-                <p className="text-sm text-gray-600">Spring Cloud Gateway</p>
-                <p className="text-xs text-gray-500 mt-2">Port: 8080</p>
-              </div>
-            </div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <Card 
+                key={feature.title} 
+                hover 
+                className="group animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` } as React.CSSProperties}
+              >
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center text-2xl mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{feature.desc}</p>
+              </Card>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="bg-gray-800 text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p>© 2025 AgriServices - MAHAMADOU AMADOU HABOU</p>
-          <p className="text-sm text-gray-400 mt-2">Version 1.0 - MVP Complet</p>
+      {/* Architecture Section */}
+      <div className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Architecture Microservices
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              6 services indépendants communiquant via l'API Gateway
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service, index) => (
+              <div 
+                key={service.name}
+                className="group relative p-6 bg-gradient-to-br from-gray-50 to-white border-2 border-emerald-100 rounded-2xl hover:border-emerald-300 hover:shadow-lg transition-all animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` } as React.CSSProperties}
+              >
+                <div className="flex items-start gap-4">
+                  <span className="text-3xl">{service.icon}</span>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg text-gray-900 mb-1">{service.name}</h3>
+                    <p className="text-sm text-gray-600 mb-2">{service.tech}</p>
+                    <div className="inline-flex items-center px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-xs font-mono">
+                      Port: {service.port}
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute top-4 right-4 w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* CTA Section */}
+      <div className="py-20 bg-gradient-to-r from-emerald-600 to-teal-600">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+            Prêt à optimiser votre gestion agricole ?
+          </h2>
+          <p className="text-xl text-emerald-100 mb-8">
+            Inscrivez-vous gratuitement et découvrez la puissance d'AgriServices
+          </p>
+          <Link
+            href="/register"
+            className="inline-flex items-center bg-white text-emerald-700 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition-all shadow-lg hover:shadow-xl"
+          >
+            Créer un compte gratuit
+          </Link>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">🌾</span>
+              <div>
+                <h3 className="font-bold text-lg">AgriServices</h3>
+                <p className="text-gray-400 text-sm">MAHAMADOU AMADOU HABOU</p>
+              </div>
+            </div>
+            <div className="text-center md:text-right">
+              <p className="text-gray-400">© 2025 AgriServices - Tous droits réservés</p>
+              <p className="text-sm text-gray-500 mt-1">Version 1.0 - MVP Complet</p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

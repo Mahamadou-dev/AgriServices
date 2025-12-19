@@ -74,19 +74,13 @@ services:
       context: ../services/api-gateway
       dockerfile: ../../docker/Dockerfiles/api-gateway.Dockerfile
     ports:
-      - "8080:8080"
+      - 8090:8080
     depends_on:
       - auth-service
       - farmer-service
       - crop-service
       - prediction-service
       - billing-service
-    environment:
-      - SPRING_CLOUD_GATEWAY_ROUTES_0_URI=http://auth-service:8081
-      - SPRING_CLOUD_GATEWAY_ROUTES_1_URI=http://farmer-service:3001
-      - SPRING_CLOUD_GATEWAY_ROUTES_2_URI=http://crop-service:8082
-      - SPRING_CLOUD_GATEWAY_ROUTES_3_URI=http://prediction-service:8000
-      - SPRING_CLOUD_GATEWAY_ROUTES_4_URI=http://billing-service:8085
     networks:
       - agri-network
 
