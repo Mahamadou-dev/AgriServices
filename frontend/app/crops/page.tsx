@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { cropAPI, getAuthToken } from '@/lib/api';
+import { getAuthToken } from '@/lib/api';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 
@@ -24,6 +24,7 @@ export default function CropsPage() {
     diseaseStatus: 'Healthy',
   });
 
+
   useEffect(() => {
     const token = getAuthToken();
     if (!token) {
@@ -33,45 +34,53 @@ export default function CropsPage() {
     loadCrops();
   }, [router]);
 
-  const loadCrops = async () => {
-    try {
-      setLoading(true);
-      const data = await cropAPI.listCrops();
-      setCrops(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
+
+  // Simulation stockage local
+  const LOCAL_KEY = 'simulated_crops';
+
+  const loadCrops = () => {
+    setLoading(true);
+    setTimeout(() => {
+      const data = localStorage.getItem(LOCAL_KEY);
+      setCrops(data ? JSON.parse(data) : []);
       setLoading(false);
-    }
+    }, 400); // Simule un délai réseau
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      setLoading(true);
-      await cropAPI.createCrop(formData);
+    setLoading(true);
+    setTimeout(() => {
+      const data = localStorage.getItem(LOCAL_KEY);
+      const cropsArr: Crop[] = data ? JSON.parse(data) : [];
+      const newCrop: Crop = {
+        id: Date.now(),
+        name: formData.name,
+        type: formData.type,
+        diseaseStatus: formData.diseaseStatus,
+      };
+      cropsArr.push(newCrop);
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(cropsArr));
       setShowForm(false);
       setFormData({ name: '', type: 'Cereal', diseaseStatus: 'Healthy' });
-      loadCrops();
-    } catch (error) {
-      console.error(error);
-    } finally {
+      setCrops(cropsArr);
       setLoading(false);
-    }
+    }, 400);
   };
 
-  const handleDelete = async (id: number) => {
+
+  const handleDelete = (id: number) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette culture ?')) return;
-    
-    try {
-      setLoading(true);
-      await cropAPI.deleteCrop(id);
-      loadCrops();
-    } catch (error) {
-      console.error(error);
-    } finally {
+    setLoading(true);
+    setTimeout(() => {
+      const data = localStorage.getItem(LOCAL_KEY);
+      let cropsArr: Crop[] = data ? JSON.parse(data) : [];
+      cropsArr = cropsArr.filter(crop => crop.id !== id);
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(cropsArr));
+      setCrops(cropsArr);
       setLoading(false);
-    }
+    }, 400);
   };
 
   const getStatusColor = (status: string) => {

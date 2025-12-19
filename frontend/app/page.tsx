@@ -21,9 +21,9 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen mx-auto bg-gray-50">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-700 via-green-800 to-teal-800 text-white">
+      <div className="relative overflow-hidden  mx-auto min-h-30 bg-gradient-to-br from-emerald-700 via-green-800 to-teal-800 text-white" style={{margin:'auto'}}>
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
@@ -160,7 +160,7 @@ export default function Home() {
               <span className="text-5xl">🌾</span>
               <div>
                 <h3 className="font-extrabold text-2xl">AgriServices</h3>
-                <p className="text-gray-400 text-base mt-2">MAHAMADOU AMADOU HABOU</p>
+                <p className="text-gray-400 text-base mt-2"></p>
               </div>
             </div>
             <div className="text-center md:text-right">

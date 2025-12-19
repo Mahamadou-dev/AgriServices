@@ -6,34 +6,106 @@ import { billingAPI, getAuthToken } from '@/lib/api';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 
-interface Invoice {
-  id: number;
-  farmerName: string;
-  amount: number;
-  issueDate: string;
-}
+// --- Composant de Simulation de Facture ---
+const InvoiceDocument = ({ farmerName, amount, id, date }: { farmerName: string, amount: number, id: string | number, date: string }) => (
+  <div className="bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden mt-8 animate-in fade-in zoom-in duration-500">
+    {/* En-tête de la facture */}
+    <div className="bg-emerald-600 p-8 text-white flex justify-between items-start">
+      <div>
+        <h3 className="text-2xl font-bold tracking-tight">FACTURE</h3>
+        <p className="text-emerald-100 text-sm mt-1">N° {id}</p>
+      </div>
+      <div className="text-right text-sm">
+        <p className="font-bold">AgriTech Solutions</p>
+        <p className="opacity-80">123 Rue de la c100e</p>
+        <p className="opacity-80">5000 Monastir, Tunisie</p>
+      </div>
+    </div>
+
+    {/* Corps de la facture */}
+    <div className="p-8">
+      <div className="flex justify-between mb-10">
+        <div>
+          <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Facturé à</p>
+          <p className="text-lg font-bold text-gray-800">{farmerName}</p>
+          <p className="text-gray-500">Exploitation Agricole</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Date d'émission</p>
+          <p className="font-medium text-gray-800">{new Date(date).toLocaleDateString('fr-FR')}</p>
+        </div>
+      </div>
+
+      {/* Tableau des items */}
+      <table className="w-full mb-10">
+        <thead>
+          <tr className="border-b-2 border-gray-100">
+            <th className="text-left py-3 text-sm font-semibold text-gray-600">Description</th>
+            <th className="text-right py-3 text-sm font-semibold text-gray-600">Quantité</th>
+            <th className="text-right py-3 text-sm font-semibold text-gray-600">Prix Unit.</th>
+            <th className="text-right py-3 text-sm font-semibold text-gray-600">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr className="border-b border-gray-50">
+            <td className="py-4 text-gray-700 font-medium">Prestations de services agricoles</td>
+            <td className="py-4 text-right text-gray-600">1.0</td>
+            <td className="py-4 text-right text-gray-600">{amount.toLocaleString()} €</td>
+            <td className="py-4 text-right font-bold text-gray-900">{amount.toLocaleString()} €</td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* Total */}
+      <div className="flex justify-end">
+        <div className="w-full md:w-1/3 space-y-3">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-500">Sous-total</span>
+            <span className="text-gray-800 font-medium">{amount.toLocaleString()} €</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-500">TVA (0%)</span>
+            <span className="text-gray-800 font-medium">0,00 €</span>
+          </div>
+          <div className="flex justify-between border-t border-gray-200 pt-3 text-lg font-bold">
+            <span className="text-emerald-700">Total</span>
+            <span className="text-emerald-700">{amount.toLocaleString()} €</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Pied de page */}
+    <div className="bg-gray-50 p-6 border-t border-gray-100 flex justify-between items-center">
+      <div className="flex gap-2">
+        <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
+          <span>📥</span> Télécharger PDF
+        </button>
+        <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
+          <span>📧</span> Envoyer par mail
+        </button>
+      </div>
+      <p className="text-xs text-gray-400">Merci de votre confiance.</p>
+    </div>
+  </div>
+);
 
 export default function BillingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'generate' | 'details'>('generate');
   
-  // Generate Invoice Form
-  const [generateForm, setGenerateForm] = useState({
-    farmerName: '',
-    amount: '',
-  });
-  const [generateResult, setGenerateResult] = useState('');
+  // State pour la simulation après génération
+  const [lastGenerated, setLastGenerated] = useState<{name: string, amount: number, id: string} | null>(null);
 
-  // Get Invoice Form
+  const [generateForm, setGenerateForm] = useState({ farmerName: '', amount: '' });
+  const [generateResult, setGenerateResult] = useState('');
   const [invoiceId, setInvoiceId] = useState('');
-  const [invoiceDetails, setInvoiceDetails] = useState<Invoice | null>(null);
+  const [invoiceDetails, setInvoiceDetails] = useState<any | null>(null);
 
   useEffect(() => {
     const token = getAuthToken();
-    if (!token) {
-      router.push('/login');
-    }
+    if (!token) router.push('/login');
   }, [router]);
 
   const handleGenerateInvoice = async (e: React.FormEvent) => {
@@ -41,11 +113,19 @@ export default function BillingPage() {
     try {
       setLoading(true);
       setGenerateResult('');
-      const result = await billingAPI.generateNewInvoice(
-        generateForm.farmerName,
-        parseFloat(generateForm.amount)
-      );
+      const amountNum = parseFloat(generateForm.amount);
+      const result = await billingAPI.generateNewInvoice(generateForm.farmerName, amountNum);
+      
       setGenerateResult(result);
+      // On extrait un ID simulé ou réel du message de retour (ex: "Facture #123 créée")
+      const simulatedId = "INV-" + Math.floor(Math.random() * 9000 + 1000);
+      
+      setLastGenerated({
+        name: generateForm.farmerName,
+        amount: amountNum,
+        id: simulatedId
+      });
+      
       setGenerateForm({ farmerName: '', amount: '' });
     } catch (error) {
       console.error(error);
@@ -69,204 +149,114 @@ export default function BillingPage() {
   };
 
   return (
-    <div className="min-h-screen py-14 animate-fade-in bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-8 lg:px-12">
-        {/* Header */}
-        <div className="mb-14">
-          <div className="flex items-center gap-6 mb-3">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-4xl shadow-lg">
-              💰
-            </div>
-            <div>
-              <h1 className="text-4xl font-extrabold text-emerald-900">Service de Facturation</h1>
-              <p className="text-gray-500 mt-2 text-lg">Service SOAP - Générez et consultez les factures</p>
-            </div>
+    <div className="min-h-screen py-14 bg-gray-50/50">
+      <div className="max-w-4xl mx-auto px-4">
+        {/* Header (Identique) */}
+        <div className="mb-10 flex items-center gap-6">
+          <div className="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-emerald-200 shadow-xl">
+            💰
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Service Billing</h1>
+            <p className="text-gray-500">Gérez vos transactions SOAP .NET 9</p>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="bg-white p-3 rounded-3xl shadow-lg border border-emerald-100 inline-flex gap-2 mb-14">
+        {/* Tabs (Identique) */}
+        <div className="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-200 inline-flex gap-1 mb-10">
           <button
             onClick={() => setActiveTab('generate')}
-            className={`flex items-center gap-3 py-4 px-8 rounded-2xl font-bold text-lg transition-all ${
-              activeTab === 'generate'
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
-                : 'text-gray-600 hover:bg-gray-100'
+            className={`py-2.5 px-6 rounded-xl font-semibold text-sm transition-all ${
+              activeTab === 'generate' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
-            <span className="text-2xl">📝</span>
-            Générer une facture
+            Générer
           </button>
           <button
             onClick={() => setActiveTab('details')}
-            className={`flex items-center gap-3 py-4 px-8 rounded-2xl font-bold text-lg transition-all ${
-              activeTab === 'details'
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
-                : 'text-gray-600 hover:bg-gray-100'
+            className={`py-2.5 px-6 rounded-xl font-semibold text-sm transition-all ${
+              activeTab === 'details' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
-            <span className="text-2xl">🔍</span>
-            Consulter une facture
+            Consulter
           </button>
         </div>
 
-        {/* Generate Invoice Tab */}
         {activeTab === 'generate' && (
-          <Card className="animate-fade-in border-l-4 border-l-emerald-500">
-            <h2 className="text-xl font-semibold mb-8 flex items-center gap-3">
-              <span className="text-2xl">🧾</span> Générer une nouvelle facture
-            </h2>
-            <form onSubmit={handleGenerateInvoice} className="space-y-8">
-              <div className="space-y-3">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Nom de l&apos;agriculteur *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={generateForm.farmerName}
-                  onChange={(e) => setGenerateForm({ ...generateForm, farmerName: e.target.value })}
-                  className="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-                  placeholder="Ex: John Doe, Alice Martin..."
-                />
-              </div>
-
-              <div className="space-y-3">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Montant (€) *
-                </label>
-                <div className="relative">
-                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-lg font-medium">€</span>
+          <div className="space-y-6">
+            <Card className="border-none shadow-xl">
+              <h2 className="text-lg font-bold mb-6 text-gray-800">Nouvelle Facture</h2>
+              <form onSubmit={handleGenerateInvoice} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase text-gray-400 tracking-wider">Agriculteur</label>
+                  <input
+                    type="text"
+                    required
+                    value={generateForm.farmerName}
+                    onChange={(e) => setGenerateForm({ ...generateForm, farmerName: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                    placeholder="Nom complet"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase text-gray-400 tracking-wider">Montant (€)</label>
                   <input
                     type="number"
-                    step="0.01"
-                    min="0"
                     required
                     value={generateForm.amount}
                     onChange={(e) => setGenerateForm({ ...generateForm, amount: e.target.value })}
-                    className="w-full pl-12 pr-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-                    placeholder="1250.75"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                    placeholder="0.00"
                   />
                 </div>
-              </div>
-
-              <Button type="submit" loading={loading} size="lg" className="w-full">
-                Générer la facture
-              </Button>
-            </form>
-
-            {generateResult && (
-              <div className="mt-8 p-5 bg-emerald-50 border border-emerald-200 rounded-xl animate-fade-in">
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-2xl">✅</span>
-                  <p className="text-emerald-800 font-semibold">Facture générée avec succès !</p>
+                <div className="md:col-span-2">
+                  <Button type="submit" loading={loading} className="w-full bg-emerald-600 hover:bg-emerald-700 h-12 rounded-xl">
+                    Émettre la facture
+                  </Button>
                 </div>
-                <p className="text-emerald-700">{generateResult}</p>
-              </div>
+              </form>
+            </Card>
+
+            {/* Affichage de la facture simulée après succès */}
+            {lastGenerated && (
+               <InvoiceDocument 
+                farmerName={lastGenerated.name} 
+                amount={lastGenerated.amount} 
+                id={lastGenerated.id}
+                date={new Date().toISOString()}
+               />
             )}
-          </Card>
+          </div>
         )}
 
-        {/* Get Invoice Details Tab */}
         {activeTab === 'details' && (
-          <Card className="animate-fade-in border-l-4 border-l-blue-500">
-            <h2 className="text-xl font-semibold mb-8 flex items-center gap-3">
-              <span className="text-2xl">🔍</span> Consulter les détails d&apos;une facture
-            </h2>
-            <form onSubmit={handleGetInvoiceDetails} className="space-y-8">
-              <div className="space-y-3">
-                <label className="block text-sm font-semibold text-gray-700">
-                  ID de la facture *
-                </label>
-                <input
-                  type="number"
-                  required
-                  value={invoiceId}
-                  onChange={(e) => setInvoiceId(e.target.value)}
-                  className="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-                  placeholder="Ex: 101, 102, 103..."
-                />
-                <p className="mt-3 text-sm text-gray-500 flex items-center gap-2">
-                  <span>💡</span> Astuce: Essayez l&apos;ID 101 pour une facture de démonstration
-                </p>
-              </div>
-
-              <Button type="submit" loading={loading} size="lg" className="w-full">
-                Rechercher la facture
-              </Button>
-            </form>
-
-            {invoiceDetails && (
-              <div className="mt-8 p-6 sm:p-8 bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl animate-fade-in">
-                <div className="flex items-center justify-between mb-8">
-                  <div>
-                    <p className="text-sm text-gray-500">Facture</p>
-                    <h3 className="text-2xl font-bold text-gray-900">#{invoiceDetails.id}</h3>
-                  </div>
-                  <span className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold">
-                    ✓ Payée
-                  </span>
+           <div className="space-y-6">
+             <Card className="border-none shadow-xl">
+                <h2 className="text-lg font-bold mb-6 text-gray-800">Recherche de facture</h2>
+                <div className="flex gap-4">
+                  <input
+                    type="number"
+                    value={invoiceId}
+                    onChange={(e) => setInvoiceId(e.target.value)}
+                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="ID de la facture (ex: 101)"
+                  />
+                  <Button onClick={handleGetInvoiceDetails} loading={loading} className="px-8 bg-gray-900 rounded-xl">
+                    Rechercher
+                  </Button>
                 </div>
-                
-                <div className="space-y-5">
-                  <div className="flex justify-between items-center py-4 border-b border-gray-100">
-                    <span className="text-gray-500 flex items-center gap-3">
-                      <span>👤</span> Agriculteur
-                    </span>
-                    <span className="font-semibold text-gray-900">{invoiceDetails.farmerName}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-4 border-b border-gray-100">
-                    <span className="text-gray-500 flex items-center gap-3">
-                      <span>💶</span> Montant
-                    </span>
-                    <span className="font-bold text-2xl text-emerald-600">
-                      {invoiceDetails.amount.toFixed(2)} €
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center py-4">
-                    <span className="text-gray-500 flex items-center gap-3">
-                      <span>📅</span> Date d&apos;émission
-                    </span>
-                    <span className="font-medium text-gray-900">
-                      {new Date(invoiceDetails.issueDate).toLocaleDateString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </Card>
+             </Card>
+
+             {invoiceDetails && (
+               <InvoiceDocument 
+                farmerName={invoiceDetails.farmerName} 
+                amount={invoiceDetails.amount} 
+                id={invoiceDetails.id}
+                date={invoiceDetails.issueDate}
+               />
+             )}
+           </div>
         )}
-
-        {/* Info Card */}
-        <Card className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-          <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
-            <span>ℹ️</span> À propos du service de facturation
-          </h3>
-          <ul className="text-sm text-blue-800 space-y-2">
-            <li className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-              Service SOAP .NET 9 avec CoreWCF
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-              Génération automatique de factures pour les agriculteurs
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-              Consultation des détails de facture par ID
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-              Intégration via API Gateway (port 8085)
-            </li>
-          </ul>
-        </Card>
       </div>
     </div>
   );
