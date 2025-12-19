@@ -111,27 +111,26 @@ curl http://localhost:8080/health
 
 Documentation complète disponible dans le dossier `/documentation` :
 
-### 🎯 Analyse Projet
-- **⭐ [ANALYSE COMPLÈTE](ANALYSE-COMPLETE.md)** - Analyse complète du projet, vérification de tous les services et intégrations
-
 ### 🚀 Guides de Démarrage
 - **[Démarrage Local](documentation/DEMARRAGE-LOCAL.md)** - Guide complet pour démarrer tous les services
 - **[Guide de Tests](documentation/GUIDE-TESTS.md)** - Instructions détaillées pour tester chaque service
 
 ### 🖥️ Documentation Frontend
-- **[Frontend Guide](FRONTEND-GUIDE.md)** - Guide d'utilisation du frontend Next.js
-- **[Frontend Integration](FRONTEND-INTEGRATION-COMPLETE.md)** - Documentation d'intégration frontend-backend
+- **[Guide Frontend](documentation/guide-frontend.md)** - Guide d'utilisation du frontend Next.js
+- **[README Frontend](frontend/README.md)** - Documentation technique du frontend
 
 ### 📚 Documentation Technique
 - **[Cahier des charges](documentation/cahier-des-charges.md)** - Spécifications du projet
+- **[Architecture](documentation/architecture.md)** - Architecture du système
 - **[Spécifications techniques](documentation/specs-techniques.md)** - Détails techniques
 - **[Manuel d'utilisation](documentation/manuel-utilisation.md)** - Guide utilisateur complet
-- **[Conception système](documentation/CONCEPTION-SYSTEME.md)** - Architecture et design
+- **[Conception système](documentation/CONCEPTION-SYSTEME.md)** - Architecture et design détaillé
 
-### ⚙️ Configuration
+### ⚙️ Configuration & Déploiement
 - **[Setup MongoDB Atlas](documentation/SETUP-MONGODB-ATLAS.md)** - Configuration MongoDB
 - **[Guide équipe développement](documentation/GUIDE-EQUIPE-DEVELOPPEMENT.md)** - Guide pour les développeurs
 - **[Guide de déploiement](documentation/guide-deploiement.md)** - Déploiement en production
+- **[Production Readiness](documentation/production-readiness.md)** - Préparation pour la production
 
 ---
 
